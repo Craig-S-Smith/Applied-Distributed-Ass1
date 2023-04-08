@@ -5,24 +5,30 @@
  */
 package com.mycompany.drone_project;
 
+import java.util.Random;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author diamo
  */
-public class Drone {
+public class Drone extends Thread {
 
     /**
      * @param args the command line arguments
+     * @throws java.lang.InterruptedException
      */
     public static void main(String[] args) throws InterruptedException {
         Scanner scanner = new Scanner(System.in);
+        Random rand = new Random();
         
         int id = 0;
         String name;
         int x_pos = 0;
         int y_pos = 0;
+        boolean recallStatus = false;
         
         // Asks user to input ID, reads input, if the ID can not be parsed into an integer, displays error and allows re-input
         while (true) {
@@ -43,16 +49,70 @@ public class Drone {
         // Adds drone details to a new DroneDetails object named drone
         DroneDetails drone = new DroneDetails(id, name, x_pos, y_pos);
         
-        // Testing toString and object
-        System.out.println(drone);
-        System.out.println("-----------------");
+        // Make first connection here
         
-        // Testing every 10 seconds
+        
+        // Create Thread
+        Drone thread = new Drone();
+        thread.start();
+        
+        // Facilitates Drone movements
         while (true) {
-            Thread.sleep(10000); // Sleeps for 10 seconds
-            System.out.println("10 Seconds has passed.");
+            // If drone needs to be recalled, stops movement by breaking loop
+            if (recallStatus) {
+                break;
+            }
+            
+            // Sleeps thread for 2 seconds
+            Thread.sleep(2000);
+            
+            // Gets a random int then calls a case to move a drone in one of 4 diagonal directions
+            switch (rand.nextInt(4)) {
+                case 1:
+                    x_pos += rand.nextInt(5);
+                    y_pos += rand.nextInt(5);
+                    break;
+                case 2:
+                    x_pos -= rand.nextInt(5);
+                    y_pos += rand.nextInt(5);
+                    break;
+                case 3: 
+                    x_pos += rand.nextInt(5);
+                    y_pos -= rand.nextInt(5);
+                    break;
+                case 4:
+                    x_pos -= rand.nextInt(5);
+                    y_pos -= rand.nextInt(5);
+                    break;
+            }
+            
+            // Sets drone object's positions to new ones
+            drone.setX_pos(x_pos);
+            drone.setY_pos(y_pos);
+            
+            // Makes random number up to 20, if the number is 1 reports that there's a fire at the position
+            int fireRand = rand.nextInt(20);
+            if (fireRand == 1) {
+                System.out.println("Fire Spotted at " + x_pos + ", " + y_pos);
+            }
+            
+            System.out.println(drone);
         }
-        
+            
     }
-    
+    @Override
+    public void run() {
+        // Connect to server every 10 seconds
+        while (true) {
+            try {
+                // Sleeps thread for 10 seconds before executing further code
+                Thread.sleep(10000);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(Drone.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            // Connects to Server Here
+            
+        }
+    }
+        
 }
