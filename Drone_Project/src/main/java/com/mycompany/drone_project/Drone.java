@@ -24,10 +24,17 @@ public class Drone extends Thread {
         Scanner scanner = new Scanner(System.in);
         Random rand = new Random();
         
+        // Drone ID
         int id = 0;
+        
+        // Drone Name
         String name;
+        
+        // Drone cooordinates
         int x_pos = 0;
         int y_pos = 0;
+        
+        // If the server has issued a recall
         boolean recallStatus = false;
         
         // Asks user to input ID, reads input, if the ID can not be parsed into an integer, displays error and allows re-input
@@ -36,7 +43,11 @@ public class Drone extends Thread {
             String idInput = scanner.nextLine();
             try {
                 id = Integer.parseInt(idInput);
-                break;
+                if (id < 0) {
+                    System.out.println("ID must not be zero or negative.");
+                } else {
+                    break;
+                }
             } catch (NumberFormatException e) {
                 System.out.println("ID must be numeric only.");
             }
@@ -91,7 +102,7 @@ public class Drone extends Thread {
             drone.setY_pos(y_pos);
             
             // Makes random number up to 20, if the number is 1 reports that there's a fire at the position
-            int fireRand = rand.nextInt(20);
+            int fireRand = rand.nextInt(30);
             if (fireRand == 1) {
                 System.out.println("Fire Spotted at " + x_pos + ", " + y_pos);
             }
