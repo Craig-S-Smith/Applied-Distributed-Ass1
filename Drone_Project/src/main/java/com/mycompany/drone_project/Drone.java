@@ -70,10 +70,10 @@ public class Drone extends Thread {
             s = new Socket(hostName, serverPort);
             
             ObjectInputStream in = null;
-            ObjectOutputStream out =null;
+            ObjectOutputStream out = null;
 			
             out = new ObjectOutputStream(s.getOutputStream());
-            in = new ObjectInputStream( s.getInputStream());
+            in = new ObjectInputStream(s.getInputStream());
             
             out.writeObject(drone);
             DroneDetails drone2 = (DroneDetails)in.readObject();
