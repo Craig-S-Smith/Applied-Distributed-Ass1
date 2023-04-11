@@ -49,7 +49,7 @@ class Connection extends Thread {
     public void run() {
         try {
             
-            System.out.println("Runing");
+            System.out.println("Running");
             
             DroneDetails tempDrone = (DroneDetails)in.readObject();
             System.out.println("ID: " + tempDrone.getId());
