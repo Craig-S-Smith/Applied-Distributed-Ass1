@@ -9,7 +9,8 @@ import java.util.Random;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
+import java.net.*;
+import java.io.*;
 /**
  *
  * @author diamo
@@ -23,6 +24,8 @@ public class Drone extends Thread {
     public static void main(String[] args) throws InterruptedException {
         Scanner scanner = new Scanner(System.in);
         Random rand = new Random();
+        Socket s = null;
+        String hostName = "localhost";
         
         // Drone ID
         int id = 0;
@@ -61,7 +64,26 @@ public class Drone extends Thread {
         DroneDetails drone = new DroneDetails(id, name, x_pos, y_pos);
         
         // Make first connection here
-        
+        try {
+            int serverPort = 8888;
+            
+            s = new Socket(hostName, serverPort);
+            
+            ObjectInputStream in = null;
+            ObjectOutputStream out =null;
+			
+            out = new ObjectOutputStream(s.getOutputStream());
+            in = new ObjectInputStream( s.getInputStream());
+            
+            out.writeObject(drone);
+            DroneDetails drone2 = (DroneDetails)in.readObject();
+            System.out.println(drone2);
+            
+        } catch (UnknownHostException e){System.out.println("Socket:"+e.getMessage());
+	} catch (EOFException e){System.out.println("EOF:"+e.getMessage());
+	} catch (IOException e){System.out.println("readline:"+e.getMessage());
+        } catch(ClassNotFoundException ex){ex.printStackTrace();
+	} finally {if(s!=null) try {s.close();}catch (IOException e){System.out.println("close:"+e.getMessage());}}
         
         // Create Thread
         Drone thread = new Drone();
@@ -107,7 +129,7 @@ public class Drone extends Thread {
                 System.out.println("Fire Spotted at " + x_pos + ", " + y_pos);
             }
             
-            System.out.println(drone);
+            // System.out.println(drone);
         }
             
     }

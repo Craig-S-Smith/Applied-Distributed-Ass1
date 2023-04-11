@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.mycompany.drone_project;
+package com.mycompany.server_project;
 
 import java.io.Serializable;
 
