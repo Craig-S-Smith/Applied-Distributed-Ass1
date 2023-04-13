@@ -57,6 +57,8 @@ public class Server {
             DroneDetails drone = new DroneDetails(tempDrone.getId(), tempDrone.getName(), tempDrone.getX_pos(), tempDrone.getY_pos(), true);
             drones.add(drone);
         }
+        
+        System.out.println(drones.size() + " Drone Objects");
     }
     
     static void readDrones() {
