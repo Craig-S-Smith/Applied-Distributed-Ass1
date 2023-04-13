@@ -14,9 +14,9 @@ import java.io.*;
  */
 public class Server {
 
-    /**
-     * @param args the command line arguments
-     */
+    static boolean recallStatus = false;
+    
+    
     public static void main(String[] args) {
         try {
             int serverPort = 8888;
@@ -28,7 +28,11 @@ public class Server {
             }
             
         }   catch(IOException e) {System.out.println("Listen Socket : " + e.getMessage());}
-    } 
+    }
+    
+    static boolean ifRecall() {
+        return recallStatus;
+    }
 }
 
 class Connection extends Thread {
@@ -49,13 +53,17 @@ class Connection extends Thread {
     public void run() {
         try {
             
-            System.out.println("Running");
+            String message = "";
             
             DroneDetails tempDrone = (DroneDetails)in.readObject();
-            System.out.println("ID: " + tempDrone.getId());
-            System.out.println("Name: " + tempDrone.getName());
-            System.out.println("Coordinates: " + tempDrone.getX_pos() + ", " + tempDrone.getY_pos());
-            out.writeObject(tempDrone);
+            
+            if (Server.ifRecall()) {
+                message = "recall";
+            } else {
+                message = "confirmed";
+            }
+            
+            out.writeObject(message);
             
         }catch (EOFException e){System.out.println("EOF:"+e.getMessage());
         } catch(IOException e) {System.out.println("readline:"+e.getMessage());

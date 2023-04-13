@@ -26,6 +26,7 @@ public class Drone extends Thread {
         Random rand = new Random();
         Socket s = null;
         String hostName = "localhost";
+        String serverMessage = "";
         
         // Drone ID
         int id = 0;
@@ -76,13 +77,19 @@ public class Drone extends Thread {
             in = new ObjectInputStream(s.getInputStream());
             
             out.writeObject(drone);
-            DroneDetails drone2 = (DroneDetails)in.readObject();
-            System.out.println(drone2);
+            
+            serverMessage = (String)in.readObject();
+            
+            if (serverMessage.equals("recall")) {
+                System.out.println("Recall");
+            } else if (serverMessage.equals("confirmed")) {
+                System.out.println("confirmed");
+            }
             
         } catch (UnknownHostException e){System.out.println("Socket:"+e.getMessage());
 	} catch (EOFException e){System.out.println("EOF:"+e.getMessage());
 	} catch (IOException e){System.out.println("readline:"+e.getMessage());
-        } catch(ClassNotFoundException ex){ex.printStackTrace();
+        } catch(ClassNotFoundException ex){ ex.printStackTrace();
 	} finally {if(s!=null) try {s.close();}catch (IOException e){System.out.println("close:"+e.getMessage());}}
         
         // Create Thread
@@ -126,7 +133,7 @@ public class Drone extends Thread {
             // Makes random number up to 20, if the number is 1 reports that there's a fire at the position
             int fireRand = rand.nextInt(30);
             if (fireRand == 1) {
-                System.out.println("Fire Spotted at " + x_pos + ", " + y_pos);
+//                System.out.println("Fire Spotted at " + x_pos + ", " + y_pos);
             }
             
             // System.out.println(drone);
@@ -144,7 +151,25 @@ public class Drone extends Thread {
                 Logger.getLogger(Drone.class.getName()).log(Level.SEVERE, null, ex);
             }
             // Connects to Server Here
-            
+            /*try {
+                int serverPort = 8888;
+                Socket s = null;
+                String hostName = "localhost";
+
+                s = new Socket(hostName, serverPort);
+
+                ObjectInputStream in = null;
+                ObjectOutputStream out = null;
+
+                out = new ObjectOutputStream(s.getOutputStream());
+                in = new ObjectInputStream(s.getInputStream());
+
+                out.writeObject(drone);
+
+                } catch (UnknownHostException e){System.out.println("Socket:"+e.getMessage());
+                } catch (EOFException e){System.out.println("EOF:"+e.getMessage());
+                } catch (IOException e){System.out.println("readline:"+e.getMessage());
+                } finally {if(s!=null) try {s.close();}catch (IOException e){System.out.println("close:"+e.getMessage());}}*/
         }
     }
         
