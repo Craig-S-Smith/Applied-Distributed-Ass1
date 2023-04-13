@@ -65,6 +65,10 @@ class Connection extends Thread {
             
             out.writeObject(message);
             
+            Integer fires = (Integer)in.readObject();
+            
+            System.out.println("There are " + fires + " new fires.");
+            
         }catch (EOFException e){System.out.println("EOF:"+e.getMessage());
         } catch(IOException e) {System.out.println("readline:"+e.getMessage());
 	} catch(ClassNotFoundException ex){ ex.printStackTrace();

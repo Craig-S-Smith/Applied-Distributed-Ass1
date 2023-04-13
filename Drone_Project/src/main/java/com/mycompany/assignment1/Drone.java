@@ -86,6 +86,8 @@ public class Drone extends Thread {
                 System.out.println("confirmed");
             }
             
+            out.writeObject(0);
+            
         } catch (UnknownHostException e){System.out.println("Socket:"+e.getMessage());
 	} catch (EOFException e){System.out.println("EOF:"+e.getMessage());
 	} catch (IOException e){System.out.println("readline:"+e.getMessage());
