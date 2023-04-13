@@ -19,6 +19,9 @@ public class Server {
     static ArrayList<DroneDetails> drones = new ArrayList<>();
     
     public static void main(String[] args) {
+        
+        readDrones();
+        
         try {
             int serverPort = 8888;
             ServerSocket listenSocket = new ServerSocket(serverPort);
@@ -37,21 +40,49 @@ public class Server {
     
     static void addDrone(DroneDetails tempDrone) {
         boolean newDrone = true;
+        
         for (DroneDetails p : drones) {
-            if (p.getId() == tempDrone.getId()) {
-                p.setName(tempDrone.getName());
-                p.setX_pos(tempDrone.getX_pos());
-                p.setY_pos(tempDrone.getY_pos());
-                p.setActive(tempDrone.getActive());
-                
-                newDrone = false;
-                break;
-            }
+                if (p.getId() == tempDrone.getId()) {
+                    p.setName(tempDrone.getName());
+                    p.setX_pos(tempDrone.getX_pos());
+                    p.setY_pos(tempDrone.getY_pos());
+                    p.setActive(tempDrone.getActive());
+
+                    newDrone = false;
+                    break;
+                }
         }
         
         if (newDrone) {
             DroneDetails drone = new DroneDetails(tempDrone.getId(), tempDrone.getName(), tempDrone.getX_pos(), tempDrone.getY_pos(), true);
             drones.add(drone);
+        }
+    }
+    
+    static void readDrones() {
+        try (
+            FileInputStream fileIn = new FileInputStream("drones.bin");
+            ObjectInputStream objectIn = new ObjectInputStream(fileIn)) {
+            
+            ArrayList<DroneDetails> tempDrones = (ArrayList<DroneDetails>) objectIn.readObject();
+            if (tempDrones != null) {
+                drones = tempDrones;
+            }
+            
+        } catch(EOFException | FileNotFoundException e) {
+        } catch(IOException e) {e.printStackTrace();
+	} catch(ClassNotFoundException ex){ex.printStackTrace();
+        }
+    }
+    
+    static void saveDrones() {       
+        try (
+            FileOutputStream fileOut = new FileOutputStream("drones.bin");
+            ObjectOutputStream objectOut = new ObjectOutputStream(fileOut)
+            ) {
+            objectOut.writeObject(drones);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }
@@ -75,17 +106,25 @@ class Connection extends Thread {
         try {
             
             String message = "";
+            String clientMessage = "";
             
             DroneDetails tempDrone = (DroneDetails)in.readObject();
-            Server.addDrone(tempDrone);
             
             if (Server.ifRecall()) {
                 message = "recall";
+                out.writeObject(message);
+                clientMessage = (String)in.readObject();
+                if (clientMessage.equals("Recall Confirmed")) {
+                    tempDrone.setActive(false);
+                }
             } else {
                 message = "confirmed";
+                out.writeObject(message);
             }
             
-            out.writeObject(message);
+            Server.addDrone(tempDrone);
+            
+            System.out.println(tempDrone);
             
             Integer fires = (Integer)in.readObject();
             

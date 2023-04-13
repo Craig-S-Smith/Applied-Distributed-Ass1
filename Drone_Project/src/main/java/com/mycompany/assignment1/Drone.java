@@ -17,16 +17,15 @@ import java.io.*;
  */
 public class Drone extends Thread {
 
-    /**
-     * @param args the command line arguments
-     * @throws java.lang.InterruptedException
-     */
+    static DroneDetails drone;
+    
     public static void main(String[] args) throws InterruptedException {
         Scanner scanner = new Scanner(System.in);
         Random rand = new Random();
         Socket s = null;
         String hostName = "localhost";
         String serverMessage = "";
+        String message = "";
         
         // Drone ID
         int id = 0;
@@ -62,7 +61,7 @@ public class Drone extends Thread {
         name = scanner.nextLine();
         
         // Adds drone details to a new DroneDetails object named drone
-        DroneDetails drone = new DroneDetails(id, name, x_pos, y_pos, true);
+        drone = new DroneDetails(id, name, x_pos, y_pos, true);
         
         // Make first connection here
         try {
@@ -81,7 +80,12 @@ public class Drone extends Thread {
             serverMessage = (String)in.readObject();
             
             if (serverMessage.equals("recall")) {
-                System.out.println("Recall");
+                System.out.println("Recall Initiated");
+                message = "Recall Confirmed";
+                out.writeObject(message);
+                
+                s.close();
+                
             } else if (serverMessage.equals("confirmed")) {
                 System.out.println("confirmed");
             }
@@ -142,9 +146,21 @@ public class Drone extends Thread {
         }
             
     }
+    
+    DroneDetails returnDrone() {
+        return drone;
+    }
+    
     @Override
     public void run() {
         // Connect to server every 10 seconds
+        
+        Socket s = null;
+        String hostName = "localhost";
+        String serverMessage = "";
+        String message = "";
+        DroneDetails drone;
+        
         while (true) {
             try {
                 // Sleeps thread for 10 seconds before executing further code
@@ -153,26 +169,41 @@ public class Drone extends Thread {
                 Logger.getLogger(Drone.class.getName()).log(Level.SEVERE, null, ex);
             }
             // Connects to Server Here
-            /*try {
-                int serverPort = 8888;
-                Socket s = null;
-                String hostName = "localhost";
-
-                s = new Socket(hostName, serverPort);
-
-                ObjectInputStream in = null;
-                ObjectOutputStream out = null;
-
-                out = new ObjectOutputStream(s.getOutputStream());
-                in = new ObjectInputStream(s.getInputStream());
-
-                out.writeObject(drone);
-
-                } catch (UnknownHostException e){System.out.println("Socket:"+e.getMessage());
-                } catch (EOFException e){System.out.println("EOF:"+e.getMessage());
-                } catch (IOException e){System.out.println("readline:"+e.getMessage());
-                } finally {if(s!=null) try {s.close();}catch (IOException e){System.out.println("close:"+e.getMessage());}}*/
-        }
+            try {
+            int serverPort = 8888;
+            
+            s = new Socket(hostName, serverPort);
+            
+            ObjectInputStream in = null;
+            ObjectOutputStream out = null;
+			
+            out = new ObjectOutputStream(s.getOutputStream());
+            in = new ObjectInputStream(s.getInputStream());
+            
+            drone = returnDrone();
+            out.writeObject(drone);
+            
+            serverMessage = (String)in.readObject();
+            
+            if (serverMessage.equals("recall")) {
+                System.out.println("Recall Initiated");
+                message = "Recall Confirmed";
+                out.writeObject(message);
+                
+                s.close();
+                
+            } else if (serverMessage.equals("confirmed")) {
+                System.out.println("confirmed");
+            }
+            
+            out.writeObject(0);
+            
+            } catch (UnknownHostException e){System.out.println("Socket:"+e.getMessage());
+            } catch (EOFException e){System.out.println("EOF:"+e.getMessage());
+            } catch (IOException e){System.out.println("readline:"+e.getMessage());
+            } catch(ClassNotFoundException ex){ ex.printStackTrace();
+            } finally {if(s!=null) try {s.close();}catch (IOException e){System.out.println("close:"+e.getMessage());}}
+            }
     }
         
 }
