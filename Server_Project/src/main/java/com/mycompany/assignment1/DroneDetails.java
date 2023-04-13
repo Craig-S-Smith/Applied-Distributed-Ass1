@@ -19,14 +19,16 @@ public class DroneDetails  implements Serializable {
     private String name;
     private int x_pos;
     private int y_pos;
+    private boolean active;
     
     // Constructor
     
-    public DroneDetails (int id, String name, int x_pos, int y_pos) {
+    public DroneDetails (int id, String name, int x_pos, int y_pos, boolean active) {
         this.id = id;
         this.name = name;
         this.x_pos = x_pos;
         this.y_pos = y_pos;
+        this.active = active;
     }
     
     // Accessors / Getters
@@ -47,6 +49,10 @@ public class DroneDetails  implements Serializable {
         return y_pos;
     }
     
+    public boolean getActive() {
+        return active;
+    }
+    
     // Mutators / Setters
     
     public void setName(String name) {
@@ -59,6 +65,10 @@ public class DroneDetails  implements Serializable {
     
     public void setY_pos(int y_pos) {
         this.y_pos = y_pos;
+    }
+    
+    public void setActive(boolean active) {
+        this.active = active;
     }
     
     // toString() Method

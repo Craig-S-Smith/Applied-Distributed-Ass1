@@ -62,7 +62,7 @@ public class Drone extends Thread {
         name = scanner.nextLine();
         
         // Adds drone details to a new DroneDetails object named drone
-        DroneDetails drone = new DroneDetails(id, name, x_pos, y_pos);
+        DroneDetails drone = new DroneDetails(id, name, x_pos, y_pos, true);
         
         // Make first connection here
         try {

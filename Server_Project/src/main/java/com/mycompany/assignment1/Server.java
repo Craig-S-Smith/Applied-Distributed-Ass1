@@ -7,6 +7,7 @@ package com.mycompany.assignment1;
 
 import java.net.*;
 import java.io.*;
+import java.util.ArrayList;
 
 /**
  *
@@ -15,7 +16,7 @@ import java.io.*;
 public class Server {
 
     static boolean recallStatus = false;
-    
+    static ArrayList<DroneDetails> drones = new ArrayList<>();
     
     public static void main(String[] args) {
         try {
@@ -32,6 +33,26 @@ public class Server {
     
     static boolean ifRecall() {
         return recallStatus;
+    }
+    
+    static void addDrone(DroneDetails tempDrone) {
+        boolean newDrone = true;
+        for (DroneDetails p : drones) {
+            if (p.getId() == tempDrone.getId()) {
+                p.setName(tempDrone.getName());
+                p.setX_pos(tempDrone.getX_pos());
+                p.setY_pos(tempDrone.getY_pos());
+                p.setActive(tempDrone.getActive());
+                
+                newDrone = false;
+                break;
+            }
+        }
+        
+        if (newDrone) {
+            DroneDetails drone = new DroneDetails(tempDrone.getId(), tempDrone.getName(), tempDrone.getX_pos(), tempDrone.getY_pos(), true);
+            drones.add(drone);
+        }
     }
 }
 
@@ -56,6 +77,7 @@ class Connection extends Thread {
             String message = "";
             
             DroneDetails tempDrone = (DroneDetails)in.readObject();
+            Server.addDrone(tempDrone);
             
             if (Server.ifRecall()) {
                 message = "recall";
