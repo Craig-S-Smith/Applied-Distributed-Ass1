@@ -75,21 +75,27 @@ public class Drone extends Thread {
             out = new ObjectOutputStream(s.getOutputStream());
             in = new ObjectInputStream(s.getInputStream());
             
+            // Sends drone object to server
             out.writeObject(drone);
             
+            // Reads server String response, says if recall or confirmed
             serverMessage = (String)in.readObject();
             
+            // Checks if the message was a recall, acts accordingly
             if (serverMessage.equals("recall")) {
                 System.out.println("Recall Initiated");
+                // Confirmation Message to Server
                 message = "Recall Confirmed";
                 out.writeObject(message);
-                
+                // Closes connection
                 s.close();
-                
+            
+            // If the server confirms the input, just confirms it in commandline
             } else if (serverMessage.equals("confirmed")) {
                 System.out.println("confirmed");
             }
             
+            // Writes that there's 0 fires right now to implement
             out.writeObject(0);
             
         } catch (UnknownHostException e){System.out.println("Socket:"+e.getMessage());
@@ -180,19 +186,25 @@ public class Drone extends Thread {
             out = new ObjectOutputStream(s.getOutputStream());
             in = new ObjectInputStream(s.getInputStream());
             
+            // Gets drone object from returnDrone function then writes it to server
             drone = returnDrone();
             out.writeObject(drone);
             
+            // Reads server String response, says if recall or confirmed
             serverMessage = (String)in.readObject();
             
+            // Checks if the message was a recall, acts accordingly
             if (serverMessage.equals("recall")) {
                 System.out.println("Recall Initiated");
+                // Sends recall confirmation to server
                 message = "Recall Confirmed";
                 out.writeObject(message);
                 
+                // Closes connection
                 s.close();
                 
             } else if (serverMessage.equals("confirmed")) {
+                // If the server confirms the input, just confirms it in commandline
                 System.out.println("confirmed");
             }
             
@@ -203,7 +215,7 @@ public class Drone extends Thread {
             } catch (IOException e){System.out.println("readline:"+e.getMessage());
             } catch(ClassNotFoundException ex){ ex.printStackTrace();
             } finally {if(s!=null) try {s.close();}catch (IOException e){System.out.println("close:"+e.getMessage());}}
-            }
+        }
     }
         
 }
