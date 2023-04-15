@@ -130,6 +130,19 @@ class Connection extends Thread {
             // Gets drone object from client and adds it to tempDrone object
             DroneDetails tempDrone = (DroneDetails)in.readObject();
             
+            // Confirm drone object
+            message = "confirmed";
+            out.writeObject(message);
+            
+            // Receives how many fires there are and confirms receival
+            Integer numFires = (Integer)in.readObject();
+            out.writeObject(message);
+            
+            // Receives fires based on integer
+            if (numFires > 0) {
+                
+            }
+            
             // If a Recall is active it will respond to the client saying so
             if (Server.ifRecall()) {
                 message = "recall";
@@ -150,9 +163,9 @@ class Connection extends Thread {
             
             System.out.println(tempDrone);
             
-            Integer fires = (Integer)in.readObject();
             
-            System.out.println("There are " + fires + " new fires.");
+            
+            System.out.println("There are " + numFires + " new fires.");
             
         }catch (EOFException e){System.out.println("EOF:"+e.getMessage());
         } catch(IOException e) {System.out.println("readline:"+e.getMessage());

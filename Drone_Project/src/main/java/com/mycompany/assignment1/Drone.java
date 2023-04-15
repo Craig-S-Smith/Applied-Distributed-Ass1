@@ -77,12 +77,17 @@ public class Drone extends Thread {
             out = new ObjectOutputStream(s.getOutputStream());
             in = new ObjectInputStream(s.getInputStream());
             
-            // Sends drone object to server
+            // Sends drone object to server and confirms
             out.writeObject(drone);
-            
-            // Reads server String response, says if recall or confirmed
             serverMessage = (String)in.readObject();
+            System.out.println("Server: Confirmed Drone Data");
             
+            // Writes that there's 0 fires right now to implement and receives confirmation
+            out.writeObject(0);
+            serverMessage = (String)in.readObject();
+            System.out.println("Server: Confirmed Number of Fires Data");
+            
+            serverMessage = (String)in.readObject();
             // Checks if the message was a recall, acts accordingly
             if (serverMessage.equals("recall")) {
                 System.out.println("Recall Initiated");
@@ -97,8 +102,7 @@ public class Drone extends Thread {
                 System.out.println("confirmed");
             }
             
-            // Writes that there's 0 fires right now to implement
-            out.writeObject(0);
+            
             
         } catch (UnknownHostException e){System.out.println("Socket:"+e.getMessage());
 	} catch (EOFException e){System.out.println("EOF:"+e.getMessage());
@@ -191,9 +195,22 @@ public class Drone extends Thread {
             out = new ObjectOutputStream(s.getOutputStream());
             in = new ObjectInputStream(s.getInputStream());
             
-            // Gets drone object from returnDrone function then writes it to server
+            // Gets drone object from returnDrone function then writes it to server and confirms
             drone = returnDrone();
             out.writeObject(drone);
+            serverMessage = (String)in.readObject();
+            System.out.println("Server: Confirmed Drone Data");
+            
+            // Sends number of fires
+            Integer numFires = Drone.fires.size();
+            out.writeObject(numFires);
+            serverMessage = (String)in.readObject();
+            System.out.println("Server: Confirmed Number of Fires Data");
+            
+            if (numFires > 0) {
+                
+                Drone.fires.clear();
+            }
             
             // Reads server String response, says if recall or confirmed
             serverMessage = (String)in.readObject();
@@ -212,8 +229,6 @@ public class Drone extends Thread {
                 // If the server confirms the input, just confirms it in commandline
                 System.out.println("confirmed");
             }
-            
-            out.writeObject(0);
             
             } catch (UnknownHostException e){System.out.println("Socket:"+e.getMessage());
             } catch (EOFException e){System.out.println("EOF:"+e.getMessage());
