@@ -53,6 +53,15 @@ public class FireDetails  implements Serializable {
         return severity;
     }
     
+    public String toCSV() {
+        return
+                id + "," +
+                x_pos + "," +
+                y_pos + "," +
+                droneId + "," +
+                severity;
+    }
+    
     // toString() Method
     @Override
     public String toString() {

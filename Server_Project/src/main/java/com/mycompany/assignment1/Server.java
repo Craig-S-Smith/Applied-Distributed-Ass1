@@ -116,6 +116,15 @@ public class Server {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        
+        try {
+            FileWriter writer = new FileWriter("fires.csv", false);
+            for (FireDetails p : fires) {
+                writer.write(p.toCSV() + "\n");
+            }
+            writer.close();
+        } catch(IOException e) {e.printStackTrace();
+        }
     }
 }
 
@@ -182,8 +191,6 @@ class Connection extends Thread {
             Server.addDrone(tempDrone);
             
             System.out.println(tempDrone);
-            
-            
             
             System.out.println("There are " + numFires + " new fires.");
             System.out.println("There are " + Server.fires.size() + " fires.");

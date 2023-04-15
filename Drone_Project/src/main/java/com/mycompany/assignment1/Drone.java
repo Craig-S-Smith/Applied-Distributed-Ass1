@@ -244,6 +244,5 @@ public class Drone extends Thread {
             } catch(ClassNotFoundException ex){ ex.printStackTrace();
             } finally {if(s!=null) try {s.close();}catch (IOException e){System.out.println("close:"+e.getMessage());}}
         }
-    }
-        
+    } 
 }
