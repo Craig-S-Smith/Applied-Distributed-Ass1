@@ -11,6 +11,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.net.*;
 import java.io.*;
+import java.util.ArrayList;
 /**
  *
  * @author diamo
@@ -18,6 +19,7 @@ import java.io.*;
 public class Drone extends Thread {
 
     static DroneDetails drone;
+    static ArrayList<FireDetails> fires = new ArrayList<>();
     
     public static void main(String[] args) throws InterruptedException {
         Scanner scanner = new Scanner(System.in);
@@ -145,7 +147,10 @@ public class Drone extends Thread {
             // Makes random number up to 20, if the number is 1 reports that there's a fire at the position
             int fireRand = rand.nextInt(30);
             if (fireRand == 1) {
-//                System.out.println("Fire Spotted at " + x_pos + ", " + y_pos);
+                int fireSeverity = rand.nextInt(9);
+                System.out.println("Fire with Severity " + fireSeverity + " spotted at " + x_pos + ", " + y_pos);
+                FireDetails fire = new FireDetails(0, x_pos, y_pos, id, fireSeverity);
+                fires.add(fire);
             }
             
             // System.out.println(drone);
