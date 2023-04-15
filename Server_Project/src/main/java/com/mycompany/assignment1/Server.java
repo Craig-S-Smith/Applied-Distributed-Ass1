@@ -17,6 +17,7 @@ public class Server {
 
     static boolean recallStatus = false;
     static ArrayList<DroneDetails> drones = new ArrayList<>();
+    static ArrayList<FireDetails> fires = new ArrayList<>();
     
     public static void main(String[] args) {
         // Calls function to read data from files
@@ -69,6 +70,20 @@ public class Server {
         }
         
         // System.out.println(drones.size() + " Drone Objects");
+    }
+    
+    static void addFire(FireDetails tempFire) {
+        
+        if (fires.size() == 0) {
+            FireDetails fire = new FireDetails(0, tempFire.getX_pos(), tempFire.getY_pos(), tempFire.getDroneId(), tempFire.getSeverity());
+            fires.add(fire);
+            System.out.println(fire.toString());
+        } else {
+            int fireId = fires.size();
+            FireDetails fire = new FireDetails(fireId, tempFire.getX_pos(), tempFire.getY_pos(), tempFire.getDroneId(), tempFire.getSeverity());
+            fires.add(fire);
+            System.out.println(fire.toString());
+        }
     }
     
     static void readDrones() {
@@ -140,7 +155,12 @@ class Connection extends Thread {
             
             // Receives fires based on integer
             if (numFires > 0) {
-                
+                for (int i = 0; i < numFires; i++) {
+                    FireDetails tempFire = (FireDetails)in.readObject();
+                    Server.addFire(tempFire);
+                    message = "confirmed";
+                    out.writeObject(message);
+                }
             }
             
             // If a Recall is active it will respond to the client saying so
@@ -166,6 +186,7 @@ class Connection extends Thread {
             
             
             System.out.println("There are " + numFires + " new fires.");
+            System.out.println("There are " + Server.fires.size() + " fires.");
             
         }catch (EOFException e){System.out.println("EOF:"+e.getMessage());
         } catch(IOException e) {System.out.println("readline:"+e.getMessage());

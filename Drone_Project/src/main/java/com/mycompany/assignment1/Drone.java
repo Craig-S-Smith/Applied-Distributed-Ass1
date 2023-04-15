@@ -20,6 +20,7 @@ public class Drone extends Thread {
 
     static DroneDetails drone;
     static ArrayList<FireDetails> fires = new ArrayList<>();
+    static boolean recallStatus = false;
     
     public static void main(String[] args) throws InterruptedException {
         Scanner scanner = new Scanner(System.in);
@@ -39,8 +40,6 @@ public class Drone extends Thread {
         int x_pos = 0;
         int y_pos = 0;
         
-        // If the server has issued a recall
-        boolean recallStatus = false;
         
         // Asks user to input ID, reads input, if the ID can not be parsed into an integer, displays error and allows re-input
         while (true) {
@@ -96,7 +95,10 @@ public class Drone extends Thread {
                 out.writeObject(message);
                 // Closes connection
                 s.close();
-            
+                
+                // Exits program immediately
+                System.exit(0);
+                
             // If the server confirms the input, just confirms it in commandline
             } else if (serverMessage.equals("confirmed")) {
                 System.out.println("confirmed");
@@ -156,8 +158,6 @@ public class Drone extends Thread {
                 FireDetails fire = new FireDetails(0, x_pos, y_pos, id, fireSeverity);
                 fires.add(fire);
             }
-            
-            // System.out.println(drone);
         }
             
     }
@@ -208,7 +208,10 @@ public class Drone extends Thread {
             System.out.println("Server: Confirmed Number of Fires Data");
             
             if (numFires > 0) {
-                
+                for (FireDetails p : Drone.fires) {
+                    out.writeObject(p);
+                    serverMessage = (String)in.readObject();
+                }
                 Drone.fires.clear();
             }
             
@@ -221,14 +224,19 @@ public class Drone extends Thread {
                 // Sends recall confirmation to server
                 message = "Recall Confirmed";
                 out.writeObject(message);
+                Drone.recallStatus = true;
                 
                 // Closes connection
                 s.close();
+                break;
                 
             } else if (serverMessage.equals("confirmed")) {
                 // If the server confirms the input, just confirms it in commandline
-                System.out.println("confirmed");
+                System.out.println("Server: Confirmed");
             }
+            
+            // Closes socket
+            s.close();
             
             } catch (UnknownHostException e){System.out.println("Socket:"+e.getMessage());
             } catch (EOFException e){System.out.println("EOF:"+e.getMessage());
