@@ -101,7 +101,7 @@ public class Drone extends Thread {
                 
             // If the server confirms the input, just confirms it in commandline
             } else if (serverMessage.equals("confirmed")) {
-                System.out.println("confirmed");
+                System.out.println("Server: Confirmed Everything\n");
             }
             
             
@@ -150,10 +150,10 @@ public class Drone extends Thread {
             drone.setX_pos(x_pos);
             drone.setY_pos(y_pos);
             
-            // Makes random number up to 20, if the number is 1 reports that there's a fire at the position
+            // Makes random number up to 30, if the number is 1 reports that there's a fire at the position
             int fireRand = rand.nextInt(30);
             if (fireRand == 1) {
-                int fireSeverity = rand.nextInt(9);
+                int fireSeverity = rand.nextInt(9) + 1;
                 System.out.println("Fire with Severity " + fireSeverity + " spotted at " + x_pos + ", " + y_pos);
                 FireDetails fire = new FireDetails(0, x_pos, y_pos, id, fireSeverity);
                 fires.add(fire);
@@ -220,7 +220,7 @@ public class Drone extends Thread {
             
             // Checks if the message was a recall, acts accordingly
             if (serverMessage.equals("recall")) {
-                System.out.println("Recall Initiated");
+                System.out.println("Server: Recall Initiated");
                 // Sends recall confirmation to server
                 message = "Recall Confirmed";
                 out.writeObject(message);
@@ -232,7 +232,7 @@ public class Drone extends Thread {
                 
             } else if (serverMessage.equals("confirmed")) {
                 // If the server confirms the input, just confirms it in commandline
-                System.out.println("Server: Confirmed");
+                System.out.println("Server: Confirmed Everything\n");
             }
             
             // Closes socket

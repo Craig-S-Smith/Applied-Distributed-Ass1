@@ -21,7 +21,7 @@ public class Server {
     
     public static void main(String[] args) {
         // Calls function to read data from files
-        readDrones();
+        readData();
         
         // Sets up connection listener with port 8888
         try {
@@ -79,14 +79,23 @@ public class Server {
             fires.add(fire);
             System.out.println(fire.toString());
         } else {
-            int fireId = fires.size();
+            int max = 0;
+            
+            for (FireDetails p : fires) {
+                if (p.getId() > max) {
+                    max = p.getId();
+                }
+            }
+            
+            int fireId = max + 1;
+            
             FireDetails fire = new FireDetails(fireId, tempFire.getX_pos(), tempFire.getY_pos(), tempFire.getDroneId(), tempFire.getSeverity());
             fires.add(fire);
             System.out.println(fire.toString());
         }
     }
     
-    static void readDrones() {
+    static void readData() {
         // Reads ArrayList from binary file drones.bin
         try (
             FileInputStream fileIn = new FileInputStream("drones.bin");
@@ -104,9 +113,31 @@ public class Server {
         } catch(IOException e) {e.printStackTrace();
 	} catch(ClassNotFoundException ex){ex.printStackTrace();
         }
+        
+        String line = "";
+        String csvDelimiter = ",";
+        
+        try (BufferedReader br = new BufferedReader(new FileReader("fires.csv"))) {
+         
+         // Read remaining lines
+         while ((line = br.readLine()) != null) {
+            String[] data = line.split(csvDelimiter);
+            int id = Integer.parseInt(data[0]);
+            int x_pos = Integer.parseInt(data[1]);
+            int y_pos = Integer.parseInt(data[2]);
+            int droneId = Integer.parseInt(data[3]);
+            int severity = Integer.parseInt(data[4]);
+
+            FireDetails fire = new FireDetails(id, x_pos, y_pos, droneId, severity);
+            fires.add(fire);
+         }
+        } catch (IOException e) {
+           e.printStackTrace();
+        } catch (NumberFormatException e) { e.printStackTrace();
+        }
     }
     
-    static void saveDrones() {
+    static void saveData() {
         // Saves drones arraylist to drones.bin
         try (
             FileOutputStream fileOut = new FileOutputStream("drones.bin");
@@ -189,6 +220,8 @@ class Connection extends Thread {
             
             // Sends tempDrone to the addDrone function to get it in the ArrayList
             Server.addDrone(tempDrone);
+            
+            Server.saveData();
             
             System.out.println(tempDrone);
             
