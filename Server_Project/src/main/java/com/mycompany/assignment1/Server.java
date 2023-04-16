@@ -353,8 +353,12 @@ public class Server extends JFrame implements ActionListener, Runnable {
                     }
                 }
                 
+                // Checks if fire is empty, if not adds fire data heading
+                if (!fires.isEmpty()) {
+                    outputText.append("\nFire Data");
+                }
+                
                 // Goes through fires ArrayList, appends any active drones to GUI text area
-                outputText.append("\nFire Data");
                 for (FireDetails p : fires) {
                     outputText.append("\n");
                     outputText.append(p.toString());
