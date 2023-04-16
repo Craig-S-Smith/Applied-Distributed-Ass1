@@ -8,6 +8,8 @@ package com.mycompany.assignment1;
 import java.net.*;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Iterator;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -156,6 +158,42 @@ public class Server {
             writer.close();
         } catch(IOException e) {e.printStackTrace();
         }
+    }
+    
+    public void deleteFire() {
+        
+        int intId = -1;
+        
+        while (true) {
+            String enteredId = JOptionPane.showInputDialog(null, "Enter a Fire ID");
+            try {
+                intId = Integer.parseInt(enteredId);
+                break;
+            } catch (NumberFormatException e) {
+                System.out.println("ID must be numeric only.");
+                JOptionPane.showMessageDialog(null, "ID must be numerical.");
+            }
+        }
+        
+        Iterator<FireDetails> iterator = fires.iterator();
+            while (iterator.hasNext()) {
+                FireDetails p = iterator.next();
+                if (p.getId() == intId) {
+                    iterator.remove();
+            }
+        }
+    }
+    
+    public void recallDrones() {
+        recallStatus = true;
+    }
+    
+    public void moveDrone() {
+        
+    }
+    
+    public void shutDown() {
+        
     }
 }
 
