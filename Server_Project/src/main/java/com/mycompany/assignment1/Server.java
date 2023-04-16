@@ -35,7 +35,7 @@ public class Server extends JFrame implements ActionListener {
     Server() {
         super("Server GUI");
         title.setFont(new Font("Arial", Font.PLAIN, 30));
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         setSize(500, 500);
         setVisible(true);
         this.setLayout(new FlowLayout());
@@ -134,7 +134,7 @@ public class Server extends JFrame implements ActionListener {
     
     static void addFire(FireDetails tempFire) {
         
-        if (fires.size() == 0) {
+        if (fires.isEmpty()) {
             FireDetails fire = new FireDetails(0, tempFire.getX_pos(), tempFire.getY_pos(), tempFire.getDroneId(), tempFire.getSeverity());
             fires.add(fire);
             System.out.println(fire.toString());
