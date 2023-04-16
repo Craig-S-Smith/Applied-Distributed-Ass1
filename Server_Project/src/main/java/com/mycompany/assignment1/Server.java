@@ -6,6 +6,7 @@
 package com.mycompany.assignment1;
 
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.*;
@@ -25,6 +26,7 @@ public class Server extends JFrame implements ActionListener {
     static ArrayList<FireDetails> fires = new ArrayList<>();
     
     // GUI Setup
+    private JLabel title = new JLabel("               Drone Server              ");
     private JButton deleteButton = new JButton("Delete Fire");
     private JButton recallButton = new JButton("Recall Drones");
     private JButton moveButton = new JButton("Move Drone");
@@ -32,6 +34,7 @@ public class Server extends JFrame implements ActionListener {
     
     Server() {
         super("Server GUI");
+        title.setFont(new Font("Arial", Font.PLAIN, 30));
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(500, 500);
         setVisible(true);
@@ -39,6 +42,7 @@ public class Server extends JFrame implements ActionListener {
         this.setResizable(false);
         
         // Add components to GUI
+        add(title);
         add(deleteButton);
         add(recallButton);
         add(moveButton);
@@ -76,6 +80,7 @@ public class Server extends JFrame implements ActionListener {
         // Calls function to read data from files
         readData();
         
+        // GUI
         Server GUI = new Server();
         
         // Sets up connection listener with port 8888
@@ -219,11 +224,13 @@ public class Server extends JFrame implements ActionListener {
         
         while (true) {
             String enteredId = JOptionPane.showInputDialog(null, "Enter a Fire ID");
+            if (enteredId == null) {
+                break;
+            }
             try {
                 intId = Integer.parseInt(enteredId);
                 break;
             } catch (NumberFormatException e) {
-                System.out.println("ID must be numeric only.");
                 JOptionPane.showMessageDialog(null, "ID must be numerical.");
             }
         }
@@ -246,7 +253,21 @@ public class Server extends JFrame implements ActionListener {
     }
     
     public void shutDown() {
-        
+        recallStatus = true;
+        boolean dronesActive;
+        while (true) {
+            dronesActive = false;
+            for (DroneDetails p : drones) {
+                if (p.getActive()) {
+                    dronesActive = true;
+                }
+            }
+            
+            if (!dronesActive) {
+                saveData();
+                System.exit(0);
+            }
+        }
     }
 }
 
