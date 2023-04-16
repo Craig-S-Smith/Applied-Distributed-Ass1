@@ -5,25 +5,78 @@
  */
 package com.mycompany.assignment1;
 
+import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.net.*;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Iterator;
-import javax.swing.JOptionPane;
+import javax.swing.*;
 
 /**
  *
  * @author diamo
  */
-public class Server {
+public class Server extends JFrame implements ActionListener {
 
     static boolean recallStatus = false;
     static ArrayList<DroneDetails> drones = new ArrayList<>();
     static ArrayList<FireDetails> fires = new ArrayList<>();
     
+    // GUI Setup
+    private JButton deleteButton = new JButton("Delete Fire");
+    private JButton recallButton = new JButton("Recall Drones");
+    private JButton moveButton = new JButton("Move Drone");
+    private JButton shutDownButton = new JButton("Shut Down");
+    
+    Server() {
+        super("Server GUI");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(500, 500);
+        setVisible(true);
+        this.setLayout(new FlowLayout());
+        this.setResizable(false);
+        
+        // Add components to GUI
+        add(deleteButton);
+        add(recallButton);
+        add(moveButton);
+        add(shutDownButton);
+        
+        // Action Listeners for Buttons
+        deleteButton.addActionListener(this);
+        recallButton.addActionListener(this);
+        moveButton.addActionListener(this);
+        shutDownButton.addActionListener(this);
+    }
+    
+    public void actionPerformed(ActionEvent e) {
+        String actionString=e.getActionCommand();
+        switch(actionString) {
+            case "Delete Fire":
+                deleteFire();
+                break;
+                
+            case "Recall Drones":
+                recallDrones();
+                break;
+                
+            case "Move Drone":
+                moveDrone();
+                break;
+                
+            case "Shut Down":
+                shutDown();
+                break;
+        }
+    }
+    
     public static void main(String[] args) {
         // Calls function to read data from files
         readData();
+        
+        Server GUI = new Server();
         
         // Sets up connection listener with port 8888
         try {
