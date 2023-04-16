@@ -22,12 +22,15 @@ import javax.swing.*;
  * @author diamo
  */
 public class Server extends JFrame implements ActionListener, Runnable {
-
+    
+    // If recall has been called
     static boolean recallStatus = false;
+    
+    // ArrayLists for Drone and Fire Objects
     static ArrayList<DroneDetails> drones = new ArrayList<>();
     static ArrayList<FireDetails> fires = new ArrayList<>();
     
-    // GUI Setup
+    // GUI Setup, all elements of GUI declared
     private JLabel titleText = new JLabel("               Drone Server              ");
     private JTextArea outputText = new JTextArea(20, 40);
     private JLabel headingText = new JLabel("               Server Output              ");
@@ -38,11 +41,17 @@ public class Server extends JFrame implements ActionListener, Runnable {
     private JScrollPane scrollPane; // Scroll pane for the text area
     
     Server() {
+        // Sets settings for java swing GUI Frame
         super("Server GUI");
+        
+        // Sets font for title
         titleText.setFont(new Font("Arial", Font.PLAIN, 30));
+        
+        // Sets X button to do nothing, shut down should be used to exit
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        
+        // Other GUI settings
         setSize(500, 500);
-        setVisible(true);
         this.setLayout(new FlowLayout());
         this.setResizable(false);
         
@@ -55,9 +64,13 @@ public class Server extends JFrame implements ActionListener, Runnable {
         add(headingText);
         add(outputText);
         
+        // Scroll Pane for Text Area
         scrollPane = new JScrollPane(outputText);
-        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER); // just need vertical scrolling
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         add(scrollPane);
+        
+        // Makes the GUI visible
+        setVisible(true);
         
         // Action Listeners for Buttons
         deleteButton.addActionListener(this);
@@ -67,6 +80,9 @@ public class Server extends JFrame implements ActionListener, Runnable {
     }
     
     public void actionPerformed(ActionEvent e) {
+        // This runs when an object action is clicked
+        // Gets the name of the object clicked and finds the case
+        // Runs the corresponding method and breaks the switch
         String actionString=e.getActionCommand();
         switch(actionString) {
             case "Delete Fire":
@@ -147,6 +163,12 @@ public class Server extends JFrame implements ActionListener, Runnable {
     
     static void addFire(FireDetails tempFire) {
         
+        /*
+        Assigns ID to the new fire object then adds it to the ArrayList
+        If the fire ArrayList is empty it will just give the Fire an ID of 0
+        If it's not it'll find the highest Fire ID and set it to one above that
+        Then makes a fire object and adds it to the arraylist and prints fire details
+        */
         if (fires.isEmpty()) {
             FireDetails fire = new FireDetails(0, tempFire.getX_pos(), tempFire.getY_pos(), tempFire.getDroneId(), tempFire.getSeverity());
             fires.add(fire);
@@ -187,6 +209,8 @@ public class Server extends JFrame implements ActionListener, Runnable {
 	} catch(ClassNotFoundException ex){ex.printStackTrace();
         }
         
+        // Reads file, each variable it checks is seperated by the delimiter, the comma
+        // Gets variables from each line and adds it to a fire object then the ArrayList
         String line = "";
         String csvDelimiter = ",";
         
@@ -221,6 +245,8 @@ public class Server extends JFrame implements ActionListener, Runnable {
             e.printStackTrace();
         }
         
+        // Saves each object in fires ArrayList to fires.csv
+        // Uses object .toCSV() to format the string with variables having commas between
         try {
             FileWriter writer = new FileWriter("fires.csv", false);
             for (FireDetails p : fires) {
@@ -232,9 +258,15 @@ public class Server extends JFrame implements ActionListener, Runnable {
     }
     
     public void deleteFire() {
-        
+        // Triggered by Delete Fire Button
+        // intId is the id that'll be entered
         int intId = -1;
         
+        /*
+        Opens Option Pane prompting for a Fire ID
+        If cancel is pressed, null will be returned causing the loop to break
+        otherwise it'll attempt to parse the ID to int, if this fails the user will be reprompted after an error message
+        */
         while (true) {
             String enteredId = JOptionPane.showInputDialog(null, "Enter a Fire ID");
             if (enteredId == null) {
@@ -248,6 +280,8 @@ public class Server extends JFrame implements ActionListener, Runnable {
             }
         }
         
+        // Iterator goes through ArrayList until it finds the ID, removes the object from ArrayList
+        // Originally used a for loop, didn't work for some reason
         Iterator<FireDetails> iterator = fires.iterator();
             while (iterator.hasNext()) {
                 FireDetails p = iterator.next();
@@ -258,6 +292,7 @@ public class Server extends JFrame implements ActionListener, Runnable {
     }
     
     public void recallDrones() {
+        // Sets recall status to true, triggered by recall button
         recallStatus = true;
     }
     
@@ -266,6 +301,17 @@ public class Server extends JFrame implements ActionListener, Runnable {
     }
     
     public void shutDown() {
+        /*
+        Sets recall status to true
+        drones active is set to false before each loop
+        Checks each object of the ArrayList to see if a drone is still active
+        If one is, dronesActive is set to true
+        
+        If dronesActive is false that means there's no drones active
+        The program saves that data (saveData()) and exits
+        
+        If there is a drone still active it will loop until no drones are active
+        */
         recallStatus = true;
         boolean dronesActive;
         while (true) {
@@ -285,10 +331,13 @@ public class Server extends JFrame implements ActionListener, Runnable {
 
     @Override
     public void run() {
+        // Runs constantly
         while (true) {
             try {
+                // Outputs current data
                 outputText.setText("Current Data");
                 
+                // If there's any active drones it'll add drone data heading
                 for (DroneDetails p : drones) {
                     if (p.getActive()) {
                         outputText.append("\nDrone Data");
@@ -296,6 +345,7 @@ public class Server extends JFrame implements ActionListener, Runnable {
                     }
                 }
                 
+                // Goes through drones ArrayList, appends any active drones to GUI text area
                 for (DroneDetails p : drones) {
                     if (p.getActive()) {
                         outputText.append("\n");
@@ -303,12 +353,14 @@ public class Server extends JFrame implements ActionListener, Runnable {
                     }
                 }
                 
+                // Goes through fires ArrayList, appends any active drones to GUI text area
                 outputText.append("\nFire Data");
                 for (FireDetails p : fires) {
                     outputText.append("\n");
                     outputText.append(p.toString());
                 }
                 
+                // Sleeps for 10 seconds before looping
                 Thread.sleep(10000);
                 
             } catch (InterruptedException ex) {
@@ -352,7 +404,8 @@ class Connection extends Thread {
             Integer numFires = (Integer)in.readObject();
             out.writeObject(message);
             
-            // Receives fires based on integer
+            // Loops for how many fires there are and receives the fire objects
+            // Sends fire object to addFire(); for it to be added, sends confirmation message
             if (numFires > 0) {
                 for (int i = 0; i < numFires; i++) {
                     FireDetails tempFire = (FireDetails)in.readObject();

@@ -207,11 +207,14 @@ public class Drone extends Thread {
             serverMessage = (String)in.readObject();
             System.out.println("Server: Confirmed Number of Fires Data");
             
+            // If there's fires it'll loop sending the fire objects one at a time
+            // Waits for confirmation message to send next fire
             if (numFires > 0) {
                 for (FireDetails p : Drone.fires) {
                     out.writeObject(p);
                     serverMessage = (String)in.readObject();
                 }
+                // Clears arraylist so fires aren't resent
                 Drone.fires.clear();
             }
             
