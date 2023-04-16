@@ -13,28 +13,33 @@ import java.net.*;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.*;
 
 /**
  *
  * @author diamo
  */
-public class Server extends JFrame implements ActionListener {
+public class Server extends JFrame implements ActionListener, Runnable {
 
     static boolean recallStatus = false;
     static ArrayList<DroneDetails> drones = new ArrayList<>();
     static ArrayList<FireDetails> fires = new ArrayList<>();
     
     // GUI Setup
-    private JLabel title = new JLabel("               Drone Server              ");
+    private JLabel titleText = new JLabel("               Drone Server              ");
+    private JTextArea outputText = new JTextArea(20, 40);
+    private JLabel headingText = new JLabel("               Server Output              ");
     private JButton deleteButton = new JButton("Delete Fire");
     private JButton recallButton = new JButton("Recall Drones");
     private JButton moveButton = new JButton("Move Drone");
     private JButton shutDownButton = new JButton("Shut Down");
+    private JScrollPane scrollPane; // Scroll pane for the text area
     
     Server() {
         super("Server GUI");
-        title.setFont(new Font("Arial", Font.PLAIN, 30));
+        titleText.setFont(new Font("Arial", Font.PLAIN, 30));
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         setSize(500, 500);
         setVisible(true);
@@ -42,11 +47,17 @@ public class Server extends JFrame implements ActionListener {
         this.setResizable(false);
         
         // Add components to GUI
-        add(title);
+        add(titleText);
         add(deleteButton);
         add(recallButton);
         add(moveButton);
         add(shutDownButton);
+        add(headingText);
+        add(outputText);
+        
+        scrollPane = new JScrollPane(outputText);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER); // just need vertical scrolling
+        add(scrollPane);
         
         // Action Listeners for Buttons
         deleteButton.addActionListener(this);
@@ -80,8 +91,10 @@ public class Server extends JFrame implements ActionListener {
         // Calls function to read data from files
         readData();
         
-        // GUI
-        Server GUI = new Server();
+        // Starts thread to update map and GUI because that's how it works apparently
+        Server obj = new Server();
+        Thread thread = new Thread(obj);
+        thread.start();
         
         // Sets up connection listener with port 8888
         try {
@@ -266,6 +279,40 @@ public class Server extends JFrame implements ActionListener {
             if (!dronesActive) {
                 saveData();
                 System.exit(0);
+            }
+        }
+    }
+
+    @Override
+    public void run() {
+        while (true) {
+            try {
+                outputText.setText("Current Data");
+                
+                for (DroneDetails p : drones) {
+                    if (p.getActive()) {
+                        outputText.append("\nDrone Data");
+                        break;
+                    }
+                }
+                
+                for (DroneDetails p : drones) {
+                    if (p.getActive()) {
+                        outputText.append("\n");
+                        outputText.append(p.toString());
+                    }
+                }
+                
+                outputText.append("\nFire Data");
+                for (FireDetails p : fires) {
+                    outputText.append("\n");
+                    outputText.append(p.toString());
+                }
+                
+                Thread.sleep(10000);
+                
+            } catch (InterruptedException ex) {
+                Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
