@@ -80,7 +80,7 @@ public class Server extends JFrame implements ActionListener, Runnable {
                 g.setColor(Color.RED);
                 g.fillOval(x - size/2, y - size/2, size, size);
                 g.setColor(Color.BLACK);
-                g.drawString("Fire " + p.getId() + " (" + severity + ")", x - 30, y);
+                g.drawString("Fire " + p.getId() + " (" + severity + ")", x - 30, y - 5);
             }
         }
     }
