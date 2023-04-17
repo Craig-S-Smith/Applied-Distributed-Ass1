@@ -104,6 +104,11 @@ public class Server extends JFrame implements ActionListener, Runnable {
         headingPanel.setPreferredSize(new Dimension(750, 40));
         headingPanel.add(titleText);
         
+        // Set Text Area Wrapping and read-only
+        outputText.setEditable(false);
+        outputText.setLineWrap(true);
+        outputText.setWrapStyleWord(true);
+        
         // Button Panel
         JPanel buttonPanel = new JPanel();
         buttonPanel.setPreferredSize(new Dimension(750, 40));
@@ -121,6 +126,7 @@ public class Server extends JFrame implements ActionListener, Runnable {
         outputPanel.add(headingText);
         outputPanel.add(outputText);
         
+        // Text Area Vertical ScrollBar
         scrollPane = new JScrollPane(outputText);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         outputPanel.add(scrollPane);
@@ -134,7 +140,6 @@ public class Server extends JFrame implements ActionListener, Runnable {
         outerMapPanel.setPreferredSize(new Dimension(400, 500));
         
         // Add panels and text to GUI
-        
         add(headingPanel);
         add(buttonText);
         add(buttonPanel);
@@ -157,6 +162,7 @@ public class Server extends JFrame implements ActionListener, Runnable {
         shutDownButton.addActionListener(this);
     }
     
+    @Override
     public void actionPerformed(ActionEvent e) {
         // This runs when an object action is clicked
         // Gets the name of the object clicked and finds the case
@@ -212,6 +218,7 @@ public class Server extends JFrame implements ActionListener, Runnable {
     static void addDrone(DroneDetails tempDrone) {
         // Assumes drone is new until found otherwise
         boolean newDrone = true;
+        boolean wasActive = false;
         
         /* Checks each drone object in the drones ArrayList to see
         if the ID is already present, if it is just updates that drone's
@@ -220,6 +227,11 @@ public class Server extends JFrame implements ActionListener, Runnable {
         */
         for (DroneDetails p : drones) {
                 if (p.getId() == tempDrone.getId()) {
+                    
+                    if (p.getActive()) {
+                        wasActive = true;
+                    }
+                    
                     p.setName(tempDrone.getName());
                     p.setX_pos(tempDrone.getX_pos());
                     p.setY_pos(tempDrone.getY_pos());
@@ -228,18 +240,22 @@ public class Server extends JFrame implements ActionListener, Runnable {
                     newDrone = false;
                     
                     if (p.getActive()) {
-                        outputLog("Drone " + p.getId() + " moved to coordinates: " + p.getX_pos() + ", " + p.getY_pos() + ".");
+                        
+                        if (wasActive) {
+                            outputLog("Drone " + p.getId() + " moved to coordinates: " + p.getX_pos() + ", " + p.getY_pos() + ".");
+                        } else {
+                            outputLog("Drone Reregistered. ID: " + p.getId() + " Name: " + p.getName());
+                        }
                     } else {
                         outputLog("Drone " + p.getId() + " recalled.");
                     }
-                    
                     break;
                 }
         }
         
         // If the drone is new, creates the drone object and adds it to the arraylist
         if (newDrone) {
-            DroneDetails drone = new DroneDetails(tempDrone.getId(), tempDrone.getName(), tempDrone.getX_pos(), tempDrone.getY_pos(), true);
+            DroneDetails drone = new DroneDetails(tempDrone.getId(), tempDrone.getName(), tempDrone.getX_pos(), tempDrone.getY_pos(), tempDrone.getActive());
             drones.add(drone);
             outputLog("New Drone Registered. ID: " + drone.getId() + " Name: " + drone.getName());
         }
@@ -375,13 +391,22 @@ public class Server extends JFrame implements ActionListener, Runnable {
         
         // Iterator goes through ArrayList until it finds the ID, removes the object from ArrayList
         // Originally used a for loop, didn't work for some reason
+        // If fire existed sets boolean to true, else will output no fire found message
+        boolean fireExists = false;
+        
         Iterator<FireDetails> iterator = fires.iterator();
             while (iterator.hasNext()) {
                 FireDetails p = iterator.next();
                 if (p.getId() == intId) {
                     iterator.remove();
                     outputLog("Fire " + intId + " removed.");
+                    fireExists = true;
+                    break;
             }
+        }
+        
+        if (!fireExists) {
+            outputLog("Fire " + intId + " not found.");
         }
     }
     
@@ -435,6 +460,7 @@ public class Server extends JFrame implements ActionListener, Runnable {
     
     public static void outputLog(String message) {
         outputText.append(message + "\n");
+        outputText.setCaretPosition(outputText.getDocument().getLength());
     }
 
     @Override
@@ -465,6 +491,7 @@ class Connection extends Thread {
 	} catch(IOException e) {System.out.println("Connection:"+e.getMessage());}
     }
     
+    @Override
     public void run() {
         try {
             
