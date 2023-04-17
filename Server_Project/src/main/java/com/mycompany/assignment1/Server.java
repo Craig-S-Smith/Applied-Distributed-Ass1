@@ -12,8 +12,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.*;
 
 /**
@@ -31,8 +29,8 @@ public class Server extends JFrame implements ActionListener, Runnable {
     
     // GUI Setup, all elements of GUI declared
     private JLabel titleText = new JLabel("Drone Server");
-    private JTextArea outputText = new JTextArea(25, 25);
-    private JLabel headingText = new JLabel("Server Output");
+    private static JTextArea outputText = new JTextArea(25, 25);
+    private JLabel headingText = new JLabel("Server Output Log");
     private JLabel mapText = new JLabel("Drone and Fire Map");
     private JLabel buttonText = new JLabel("Admin Controls");
     private JButton deleteButton = new JButton("Delete Fire");
@@ -228,6 +226,13 @@ public class Server extends JFrame implements ActionListener, Runnable {
                     p.setActive(tempDrone.getActive());
 
                     newDrone = false;
+                    
+                    if (p.getActive()) {
+                        outputLog("Drone " + p.getId() + " moved to coordinates: " + p.getX_pos() + ", " + p.getY_pos() + ".");
+                    } else {
+                        outputLog("Drone " + p.getId() + " recalled.");
+                    }
+                    
                     break;
                 }
         }
@@ -236,6 +241,7 @@ public class Server extends JFrame implements ActionListener, Runnable {
         if (newDrone) {
             DroneDetails drone = new DroneDetails(tempDrone.getId(), tempDrone.getName(), tempDrone.getX_pos(), tempDrone.getY_pos(), true);
             drones.add(drone);
+            outputLog("New Drone Registered. ID: " + drone.getId() + " Name: " + drone.getName());
         }
         
         // System.out.println(drones.size() + " Drone Objects");
@@ -252,7 +258,7 @@ public class Server extends JFrame implements ActionListener, Runnable {
         if (fires.isEmpty()) {
             FireDetails fire = new FireDetails(0, tempFire.getX_pos(), tempFire.getY_pos(), tempFire.getDroneId(), tempFire.getSeverity());
             fires.add(fire);
-            System.out.println(fire.toString());
+            outputLog("New Fire Spotted at " + fire.getX_pos() + ", " + fire.getY_pos() + " with severity " + fire.getSeverity() + ".");
         } else {
             int max = 0;
             
@@ -266,8 +272,11 @@ public class Server extends JFrame implements ActionListener, Runnable {
             
             FireDetails fire = new FireDetails(fireId, tempFire.getX_pos(), tempFire.getY_pos(), tempFire.getDroneId(), tempFire.getSeverity());
             fires.add(fire);
-            System.out.println(fire.toString());
+            outputLog("New Fire Spotted at " + fire.getX_pos() + ", " + fire.getY_pos() + " with severity " + fire.getSeverity() + ".");
         }
+        
+        
+        
     }
     
     static void readData() {
@@ -288,6 +297,8 @@ public class Server extends JFrame implements ActionListener, Runnable {
         } catch(IOException e) {e.printStackTrace();
 	} catch(ClassNotFoundException ex){ex.printStackTrace();
         }
+        
+        outputLog(drones.size() + " drones loaded.");
         
         // Reads file, each variable it checks is seperated by the delimiter, the comma
         // Gets variables from each line and adds it to a fire object then the ArrayList
@@ -312,6 +323,8 @@ public class Server extends JFrame implements ActionListener, Runnable {
            e.printStackTrace();
         } catch (NumberFormatException e) { e.printStackTrace();
         }
+        
+        outputLog(fires.size() + " fires loaded.");
     }
     
     static void saveData() {
@@ -367,13 +380,20 @@ public class Server extends JFrame implements ActionListener, Runnable {
                 FireDetails p = iterator.next();
                 if (p.getId() == intId) {
                     iterator.remove();
+                    outputLog("Fire " + intId + " removed.");
             }
         }
     }
     
     public void recallDrones() {
-        // Sets recall status to true, triggered by recall button
-        recallStatus = true;
+        // Checks if a recall is initiated
+        if (recallStatus) {
+            recallStatus = false;
+            outputLog("Recall Status uninitiated.");
+        } else {
+            recallStatus = true;
+            outputLog("Recall Status initiated.");
+        }
     }
     
     public void moveDrone() {
@@ -394,6 +414,9 @@ public class Server extends JFrame implements ActionListener, Runnable {
         */
         recallStatus = true;
         boolean dronesActive;
+        
+        outputLog("Recall Intiated.\nShut Down Commencing.");
+        
         while (true) {
             dronesActive = false;
             for (DroneDetails p : drones) {
@@ -408,6 +431,10 @@ public class Server extends JFrame implements ActionListener, Runnable {
             }
         }
     }
+    
+    public static void outputLog(String message) {
+        outputText.append(message + "\n");
+    }
 
     @Override
     public void run() {
@@ -416,44 +443,6 @@ public class Server extends JFrame implements ActionListener, Runnable {
             
             // Repaints mapPanel
             mapPanel.repaint();
-            
-            try {
-                // Outputs current data
-                outputText.setText("Current Data");
-                
-                // If there's any active drones it'll add drone data heading
-                for (DroneDetails p : drones) {
-                    if (p.getActive()) {
-                        outputText.append("\nDrone Data");
-                        break;
-                    }
-                }
-                
-                // Goes through drones ArrayList, appends any active drones to GUI text area
-                for (DroneDetails p : drones) {
-                    if (p.getActive()) {
-                        outputText.append("\n");
-                        outputText.append(p.toString());
-                    }
-                }
-                
-                // Checks if fire is empty, if not adds fire data heading
-                if (!fires.isEmpty()) {
-                    outputText.append("\nFire Data");
-                }
-                
-                // Goes through fires ArrayList, appends any active drones to GUI text area
-                for (FireDetails p : fires) {
-                    outputText.append("\n");
-                    outputText.append(p.toString());
-                }
-                
-                // Sleeps for 10 seconds before looping
-                Thread.sleep(10000);
-                
-            } catch (InterruptedException ex) {
-                Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
-            }
         }
     }
 }
