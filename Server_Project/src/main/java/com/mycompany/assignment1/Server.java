@@ -32,8 +32,9 @@ public class Server extends JFrame implements ActionListener, Runnable {
     // GUI Setup, all elements of GUI declared
     private JLabel titleText = new JLabel("Drone Server");
     private JTextArea outputText = new JTextArea(25, 25);
-    private JLabel headingText = new JLabel("               Server Output              ");
-    private JLabel mapText = new JLabel("               Drone and Fire Map              ");
+    private JLabel headingText = new JLabel("Server Output");
+    private JLabel mapText = new JLabel("Drone and Fire Map");
+    private JLabel buttonText = new JLabel("Admin Controls");
     private JButton deleteButton = new JButton("Delete Fire");
     private JButton recallButton = new JButton("Recall Drones");
     private JButton moveButton = new JButton("Move Drone");
@@ -100,9 +101,14 @@ public class Server extends JFrame implements ActionListener, Runnable {
         this.setLayout(new FlowLayout());
         this.setResizable(false);
         
+        // Heading Panel
+        JPanel headingPanel = new JPanel();
+        headingPanel.setPreferredSize(new Dimension(750, 40));
+        headingPanel.add(titleText);
+        
         // Button Panel
         JPanel buttonPanel = new JPanel();
-        buttonPanel.setPreferredSize(new Dimension(750, 60));
+        buttonPanel.setPreferredSize(new Dimension(750, 40));
         buttonPanel.add(deleteButton);
         buttonPanel.add(recallButton);
         buttonPanel.add(moveButton);
@@ -130,7 +136,9 @@ public class Server extends JFrame implements ActionListener, Runnable {
         outerMapPanel.setPreferredSize(new Dimension(400, 500));
         
         // Add panels and text to GUI
-        add(titleText);
+        
+        add(headingPanel);
+        add(buttonText);
         add(buttonPanel);
         
         outerMapPanel.add(mapText);
