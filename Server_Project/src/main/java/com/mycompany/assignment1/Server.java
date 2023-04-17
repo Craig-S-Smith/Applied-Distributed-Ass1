@@ -113,6 +113,8 @@ public class Server extends JFrame implements ActionListener, Runnable {
         
         // Output Panel
         JPanel outputPanel = new JPanel();
+        outputPanel.setPreferredSize(new Dimension(300, 500));
+        outputPanel.add(headingText);
         outputPanel.add(outputText);
         
         scrollPane = new JScrollPane(outputText);
@@ -123,14 +125,19 @@ public class Server extends JFrame implements ActionListener, Runnable {
         mapPanel = new MapPanel(drones, fires);
         mapPanel.setPreferredSize(new Dimension(400, 400));
         
+        // Outer Map Panel with text
+        JPanel outerMapPanel = new JPanel();
+        outerMapPanel.setPreferredSize(new Dimension(400, 500));
+        
         // Add panels and text to GUI
         add(titleText);
         add(buttonPanel);
         
-        add(mapText);
-        add(headingText);
-        bottomPanel.add(mapPanel);
+        outerMapPanel.add(mapText);
+        outerMapPanel.add(mapPanel);
         bottomPanel.add(outputPanel);
+        bottomPanel.add(outerMapPanel);
+        
         
         add(bottomPanel);
         
