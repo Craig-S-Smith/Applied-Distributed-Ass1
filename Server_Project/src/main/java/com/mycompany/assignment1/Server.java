@@ -31,7 +31,7 @@ public class Server extends JFrame implements ActionListener, Runnable {
     
     // GUI Setup, all elements of GUI declared
     private JLabel titleText = new JLabel("Drone Server");
-    private JTextArea outputText = new JTextArea(20, 40);
+    private JTextArea outputText = new JTextArea(30, 35);
     private JLabel headingText = new JLabel("               Server Output              ");
     private JLabel mapText = new JLabel("               Drone and Fire Map              ");
     private JButton deleteButton = new JButton("Delete Fire");
@@ -96,16 +96,20 @@ public class Server extends JFrame implements ActionListener, Runnable {
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         
         // Other GUI settings
-        setSize(500, 800);
+        setSize(1000, 850);
         this.setLayout(new FlowLayout());
         this.setResizable(false);
         
         // Button Panel
         JPanel buttonPanel = new JPanel();
+        buttonPanel.setPreferredSize(new Dimension(1000, 60));
         buttonPanel.add(deleteButton);
         buttonPanel.add(recallButton);
         buttonPanel.add(moveButton);
         buttonPanel.add(shutDownButton);
+        
+        // Bottom panel
+        JPanel bottomPanel = new JPanel();
         
         // Output Panel
         JPanel outputPanel = new JPanel();
@@ -124,10 +128,11 @@ public class Server extends JFrame implements ActionListener, Runnable {
         add(buttonPanel);
         
         add(mapText);
-        add(mapPanel);
-        
         add(headingText);
-        add(outputPanel);
+        bottomPanel.add(mapPanel);
+        bottomPanel.add(outputPanel);
+        
+        add(bottomPanel);
         
         // Makes the GUI visible
         this.setVisible(true);
