@@ -389,10 +389,10 @@ public class Server extends JFrame implements ActionListener, Runnable {
         // Checks if a recall is initiated
         if (recallStatus) {
             recallStatus = false;
-            outputLog("Recall Status uninitiated.");
+            outputLog("Recall uninitiated.");
         } else {
             recallStatus = true;
-            outputLog("Recall Status initiated.");
+            outputLog("Recall initiated.");
         }
     }
     
@@ -415,7 +415,7 @@ public class Server extends JFrame implements ActionListener, Runnable {
         recallStatus = true;
         boolean dronesActive;
         
-        outputLog("Recall Intiated.\nShut Down Commencing.");
+        outputLog("Recall Intiated.");
         
         while (true) {
             dronesActive = false;
@@ -426,6 +426,7 @@ public class Server extends JFrame implements ActionListener, Runnable {
             }
             
             if (!dronesActive) {
+                outputLog("Shut Down Commencing.");
                 saveData();
                 System.exit(0);
             }
