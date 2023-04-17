@@ -128,19 +128,19 @@ public class Drone extends Thread {
             
             // Gets a random int then calls a case to move a drone in one of 4 diagonal directions
             switch (rand.nextInt(4)) {
-                case 1:
+                case 0:
                     x_pos += rand.nextInt(5);
                     y_pos += rand.nextInt(5);
                     break;
-                case 2:
-                    x_pos -= rand.nextInt(5);
-                    y_pos += rand.nextInt(5);
-                    break;
-                case 3: 
+                case 1:
                     x_pos += rand.nextInt(5);
                     y_pos -= rand.nextInt(5);
                     break;
-                case 4:
+                case 2: 
+                    x_pos -= rand.nextInt(5);
+                    y_pos += rand.nextInt(5);
+                    break;
+                case 3:
                     x_pos -= rand.nextInt(5);
                     y_pos -= rand.nextInt(5);
                     break;
