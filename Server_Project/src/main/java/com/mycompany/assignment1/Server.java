@@ -61,20 +61,20 @@ public class Server extends JFrame implements ActionListener, Runnable {
             // Draw drones as blue circles with drone id
             for (DroneDetails p : drones) {
                 if (p.getActive()) {
-                    int x = (p.getX_pos() + 100) * 2;
-                    int y = (p.getY_pos() + 100) * 2;
+                    int x = (100 - p.getX_pos()) * 2;
+                    int y = (100 - p.getY_pos()) * 2;
                     int size = 10;
                     g.setColor(Color.BLUE);
                     g.fillOval(x - size/2, y - size/2, size, size);
                     g.setColor(Color.BLACK);
-                    g.drawString("Drone " + p.getId(), x - 15, y);
+                    g.drawString("Drone " + p.getId(), x - 30, y - 5);
                 }
             }
             
             // Draw fires as red circles with fire id and severity
             for (FireDetails p : fires) {
-                int x = (p.getX_pos() + 100) * 2;
-                int y = (p.getY_pos() + 100) * 2;
+                int x = (100 - p.getX_pos()) * 2;
+                int y = (100 - p.getY_pos()) * 2;
                 int severity = p.getSeverity();
                 int size = 10;
                 g.setColor(Color.RED);
