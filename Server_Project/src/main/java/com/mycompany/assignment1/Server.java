@@ -5,6 +5,7 @@
  */
 package com.mycompany.assignment1;
 
+import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -31,7 +32,7 @@ public class Server extends JFrame implements ActionListener, Runnable {
     static ArrayList<FireDetails> fires = new ArrayList<>();
     
     // GUI Setup, all elements of GUI declared
-    private JLabel titleText = new JLabel("               Drone Server              ");
+    private JLabel titleText = new JLabel("Drone Server");
     private JTextArea outputText = new JTextArea(20, 40);
     private JLabel headingText = new JLabel("               Server Output              ");
     private JButton deleteButton = new JButton("Delete Fire");
@@ -55,14 +56,22 @@ public class Server extends JFrame implements ActionListener, Runnable {
         this.setLayout(new FlowLayout());
         this.setResizable(false);
         
-        // Add components to GUI
         add(titleText);
-        add(deleteButton);
-        add(recallButton);
-        add(moveButton);
-        add(shutDownButton);
-        add(headingText);
-        add(outputText);
+        
+        // Button Panel
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.add(deleteButton);
+        buttonPanel.add(recallButton);
+        buttonPanel.add(moveButton);
+        buttonPanel.add(shutDownButton);
+        
+        // Output Panel
+        JPanel outputPanel = new JPanel();
+        outputPanel.add(headingText);
+        outputPanel.add(outputText);
+        
+        add(buttonPanel);
+        add(outputPanel);
         
         // Scroll Pane for Text Area
         scrollPane = new JScrollPane(outputText);
@@ -70,7 +79,7 @@ public class Server extends JFrame implements ActionListener, Runnable {
         add(scrollPane);
         
         // Makes the GUI visible
-        setVisible(true);
+        this.setVisible(true);
         
         // Action Listeners for Buttons
         deleteButton.addActionListener(this);
