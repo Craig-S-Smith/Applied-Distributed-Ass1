@@ -5,13 +5,11 @@
  */
 package com.mycompany.assignment1;
 
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.*;
 import java.net.*;
 import java.io.*;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.logging.Level;
@@ -35,11 +33,57 @@ public class Server extends JFrame implements ActionListener, Runnable {
     private JLabel titleText = new JLabel("Drone Server");
     private JTextArea outputText = new JTextArea(20, 40);
     private JLabel headingText = new JLabel("               Server Output              ");
+    private JLabel mapText = new JLabel("               Drone and Fire Map              ");
     private JButton deleteButton = new JButton("Delete Fire");
     private JButton recallButton = new JButton("Recall Drones");
     private JButton moveButton = new JButton("Move Drone");
     private JButton shutDownButton = new JButton("Shut Down");
     private JScrollPane scrollPane; // Scroll pane for the text area
+    private MapPanel mapPanel;
+    
+    public class MapPanel extends JPanel {
+
+        private ArrayList<DroneDetails> drones;
+        private ArrayList<FireDetails> fires;
+
+        public MapPanel(ArrayList<DroneDetails> drones, ArrayList<FireDetails> fires) {
+            this.drones = drones;
+            this.fires = fires;
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+
+            // Set background color of map panel
+            setBackground(Color.WHITE);
+            
+            // Draw drones as blue circles with drone id
+            for (DroneDetails p : drones) {
+                if (p.getActive()) {
+                    int x = (p.getX_pos() + 100) * 2;
+                    int y = (p.getY_pos() + 100) * 2;
+                    int size = 10;
+                    g.setColor(Color.BLUE);
+                    g.fillOval(x - size/2, y - size/2, size, size);
+                    g.setColor(Color.BLACK);
+                    g.drawString("Drone " + p.getId(), x - 15, y);
+                }
+            }
+            
+            // Draw fires as red circles with fire id and severity
+            for (FireDetails p : fires) {
+                int x = (p.getX_pos() + 100) * 2;
+                int y = (p.getY_pos() + 100) * 2;
+                int severity = p.getSeverity();
+                int size = 10;
+                g.setColor(Color.RED);
+                g.fillOval(x - size/2, y - size/2, size, size);
+                g.setColor(Color.BLACK);
+                g.drawString("Fire " + p.getId() + " (" + severity + ")", x - 30, y);
+            }
+        }
+    }
     
     Server() {
         // Sets settings for java swing GUI Frame
@@ -52,11 +96,9 @@ public class Server extends JFrame implements ActionListener, Runnable {
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         
         // Other GUI settings
-        setSize(500, 500);
+        setSize(500, 800);
         this.setLayout(new FlowLayout());
         this.setResizable(false);
-        
-        add(titleText);
         
         // Button Panel
         JPanel buttonPanel = new JPanel();
@@ -67,16 +109,25 @@ public class Server extends JFrame implements ActionListener, Runnable {
         
         // Output Panel
         JPanel outputPanel = new JPanel();
-        outputPanel.add(headingText);
         outputPanel.add(outputText);
         
-        add(buttonPanel);
-        add(outputPanel);
-        
-        // Scroll Pane for Text Area
         scrollPane = new JScrollPane(outputText);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        add(scrollPane);
+        outputPanel.add(scrollPane);
+        
+         // Map Panel
+        mapPanel = new MapPanel(drones, fires);
+        mapPanel.setPreferredSize(new Dimension(400, 400));
+        
+        // Add panels and text to GUI
+        add(titleText);
+        add(buttonPanel);
+        
+        add(mapText);
+        add(mapPanel);
+        
+        add(headingText);
+        add(outputPanel);
         
         // Makes the GUI visible
         this.setVisible(true);
@@ -342,6 +393,10 @@ public class Server extends JFrame implements ActionListener, Runnable {
     public void run() {
         // Runs constantly
         while (true) {
+            
+            // Repaints mapPanel
+            mapPanel.repaint();
+            
             try {
                 // Outputs current data
                 outputText.setText("Current Data");

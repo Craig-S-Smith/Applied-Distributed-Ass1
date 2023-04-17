@@ -150,8 +150,8 @@ public class Drone extends Thread {
             drone.setX_pos(x_pos);
             drone.setY_pos(y_pos);
             
-            // Makes random number up to 30, if the number is 1 reports that there's a fire at the position
-            int fireRand = rand.nextInt(30);
+            // Makes random number up to 100, if the number is 1 reports that there's a fire at the position
+            int fireRand = rand.nextInt(100);
             if (fireRand == 1) {
                 int fireSeverity = rand.nextInt(9) + 1;
                 System.out.println("Fire with Severity " + fireSeverity + " spotted at " + x_pos + ", " + y_pos);
