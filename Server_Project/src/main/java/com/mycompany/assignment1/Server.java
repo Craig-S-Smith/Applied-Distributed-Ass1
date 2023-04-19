@@ -379,7 +379,7 @@ public class Server extends JFrame implements ActionListener, Runnable {
         while (true) {
             String enteredId = JOptionPane.showInputDialog(null, "Enter a Fire ID");
             if (enteredId == null) {
-                break;
+                return;
             }
             try {
                 intId = Integer.parseInt(enteredId);
