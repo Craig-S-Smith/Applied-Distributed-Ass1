@@ -459,7 +459,9 @@ public class Server extends JFrame implements ActionListener, Runnable {
     }
     
     public static void outputLog(String message) {
+        // Outputs message given through the output text area along with a newline
         outputText.append(message + "\n");
+        // Moves scrollbar straight to bottom to make textarea act as a log
         outputText.setCaretPosition(outputText.getDocument().getLength());
     }
 
