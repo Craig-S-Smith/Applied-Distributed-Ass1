@@ -25,10 +25,20 @@ public class Drone extends Thread {
     public static void main(String[] args) throws InterruptedException {
         Scanner scanner = new Scanner(System.in);
         Random rand = new Random();
+        
+        // Socket Initialisation
         Socket s = null;
+        
+        // Host Name of Server
         String hostName = "localhost";
+        
+        // Messages received and sent to the server.
         String serverMessage = "";
         String message = "";
+        
+        // Used for movements
+        int movements = 1;
+        int direction = 0;
         
         // Drone ID
         int id = 0;
@@ -126,25 +136,37 @@ public class Drone extends Thread {
             // Sleeps thread for 2 seconds
             Thread.sleep(2000);
             
-            // Gets a random int then calls a case to move a drone in one of 4 diagonal directions
-            switch (rand.nextInt(4)) {
+            // The drone will move in the same direction for 10 movements before changing direction
+            if (movements == 1) {
+                // Chooses a direction to start moving in
+                direction = rand.nextInt(4);
+            } else if (movements == 10) {
+                // Will Reset movements back to 0
+                movements = 0;
+            }
+            
+            // Moves drone randomly in direction between 0 and 3 coordinates
+            switch (direction) {
                 case 0:
-                    x_pos += rand.nextInt(5);
-                    y_pos += rand.nextInt(5);
+                    x_pos += rand.nextInt(4);
+                    y_pos += rand.nextInt(4);
                     break;
                 case 1:
-                    x_pos += rand.nextInt(5);
-                    y_pos -= rand.nextInt(5);
+                    x_pos += rand.nextInt(4);
+                    y_pos -= rand.nextInt(4);
                     break;
                 case 2: 
-                    x_pos -= rand.nextInt(5);
-                    y_pos += rand.nextInt(5);
+                    x_pos -= rand.nextInt(4);
+                    y_pos += rand.nextInt(4);
                     break;
                 case 3:
-                    x_pos -= rand.nextInt(5);
-                    y_pos -= rand.nextInt(5);
+                    x_pos -= rand.nextInt(4);
+                    y_pos -= rand.nextInt(4);
                     break;
             }
+            
+            // Increases movements counter
+            movements++;
             
             // Sets drone object's positions to new ones
             drone.setX_pos(x_pos);
