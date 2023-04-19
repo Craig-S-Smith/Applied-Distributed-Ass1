@@ -500,6 +500,10 @@ class Connection extends Thread {
             String message = "";
             String clientMessage = "";
             
+            // Movement variables if drone is outside of boundaries
+            // New positions will be set if required
+            boolean movementRequired = false;
+            
             // Gets drone object from client and adds it to tempDrone object
             DroneDetails tempDrone = (DroneDetails)in.readObject();
             
@@ -522,7 +526,26 @@ class Connection extends Thread {
                 }
             }
             
+            // Check x positions, set if out of bounds
+            if (tempDrone.getX_pos() > 100) {
+                movementRequired = true;
+                tempDrone.setX_pos(80);
+            } else if (tempDrone.getX_pos() < -100) {
+                movementRequired = true;
+                tempDrone.setX_pos(-80);
+            }
+            
+            // Check y positions, set if out of bounds
+            if (tempDrone.getY_pos() > 100) {
+                movementRequired = true;
+                tempDrone.setY_pos(80);
+            } else if (tempDrone.getY_pos() < -100) {
+                movementRequired = true;
+                tempDrone.setY_pos(-80);
+            }
+            
             // If a Recall is active it will respond to the client saying so
+            // Recall is done first since it matters the most, position doesn't matter if it's being recalled to 0,0 regardless
             if (Server.ifRecall()) {
                 message = "recall";
                 out.writeObject(message);
@@ -530,7 +553,19 @@ class Connection extends Thread {
                 if (clientMessage.equals("Recall Confirmed")) {
                     // If drone confirms recall, set the drone active to false
                     tempDrone.setActive(false);
+                    tempDrone.setX_pos(0);
+                    tempDrone.setY_pos(0);
                 }
+            } else if (movementRequired) {
+                // Sends move message and receives confirmation between object writes
+                message = "move";
+                out.writeObject(message);
+                clientMessage = (String)in.readObject();
+                out.writeObject(tempDrone.getX_pos());
+                clientMessage = (String)in.readObject();
+                out.writeObject(tempDrone.getY_pos());
+                clientMessage = (String)in.readObject();
+                Server.outputLog("Drone " + tempDrone.getId() + " outside of boundaries. Moved back.");
             } else {
                 // Otherwise just confirms to the client it received the object
                 message = "confirmed";

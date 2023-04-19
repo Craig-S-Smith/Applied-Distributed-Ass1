@@ -18,9 +18,14 @@ import java.util.ArrayList;
  */
 public class Drone extends Thread {
 
-    static DroneDetails drone;
-    static ArrayList<FireDetails> fires = new ArrayList<>();
-    static boolean recallStatus = false;
+    static DroneDetails drone; // Drone Object
+    static ArrayList<FireDetails> fires = new ArrayList<>(); // ArrayList for storing fires found since last server update
+    static boolean recallStatus = false; // If a recall has been initiated
+    static int movements = 1; // How many movements have been done since direction change
+    
+    // Drone cooordinates
+    static int x_pos = 99;
+    static int y_pos = 99;
     
     public static void main(String[] args) throws InterruptedException {
         Scanner scanner = new Scanner(System.in);
@@ -37,7 +42,6 @@ public class Drone extends Thread {
         String message = "";
         
         // Used for movements
-        int movements = 1;
         int direction = 0;
         
         // Drone ID
@@ -45,11 +49,6 @@ public class Drone extends Thread {
         
         // Drone Name
         String name;
-        
-        // Drone cooordinates
-        int x_pos = 0;
-        int y_pos = 0;
-        
         
         // Asks user to input ID, reads input, if the ID can not be parsed into an integer, displays error and allows re-input
         while (true) {
@@ -108,7 +107,19 @@ public class Drone extends Thread {
                 
                 // Exits program immediately
                 System.exit(0);
+            
+            } else if (serverMessage.equals("move")) {
+                // If the server asks for the drone to move, receive movement locations, send confirmations between
+                message = "Move confirmed";
+                out.writeObject(message);
+                int newX_pos = (Integer)in.readObject();
+                out.writeObject(message);
+                int newY_pos = (Integer)in.readObject();
+                out.writeObject(message);
                 
+                // Sets new drone coordinates
+                x_pos = newX_pos;
+                y_pos = newY_pos;
             // If the server confirms the input, just confirms it in commandline
             } else if (serverMessage.equals("confirmed")) {
                 System.out.println("Server: Confirmed Everything\n");
@@ -188,6 +199,14 @@ public class Drone extends Thread {
         return drone;
     }
     
+    public void moveDrone(int newX_pos, int newY_pos) {
+        // This function is called if the drone is moved
+        // Resets movement so a new direction will be chosen and updates coordinates based on move
+        movements = 1;
+        x_pos = newX_pos;
+        y_pos = newY_pos;
+    }
+    
     @Override
     public void run() {
         // Connect to server every 10 seconds
@@ -255,6 +274,16 @@ public class Drone extends Thread {
                 s.close();
                 break;
                 
+            } else if (serverMessage.equals("move")) {
+                // If the server asks for the drone to move, receive movement locations, send confirmations between
+                message = "Move confirmed";
+                out.writeObject(message);
+                int newX_pos = (Integer)in.readObject();
+                out.writeObject(message);
+                int newY_pos = (Integer)in.readObject();
+                out.writeObject(message);
+                // Calls function to move drone to new location
+                moveDrone(newX_pos, newY_pos);
             } else if (serverMessage.equals("confirmed")) {
                 // If the server confirms the input, just confirms it in commandline
                 System.out.println("Server: Confirmed Everything\n");
