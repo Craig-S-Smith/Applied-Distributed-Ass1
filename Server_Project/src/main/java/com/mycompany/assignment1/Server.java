@@ -42,8 +42,8 @@ public class Server extends JFrame implements ActionListener, Runnable {
     private MapPanel mapPanel;
     
     // Hash Maps to store positions of drones that need to be moved
-    HashMap<Integer, Integer> newXPositions = new HashMap<>();
-    HashMap<Integer, Integer> newYPositions = new HashMap<>();
+    static HashMap<Integer, Integer> newXPositions = new HashMap<>();
+    static HashMap<Integer, Integer> newYPositions = new HashMap<>();
     
     public class MapPanel extends JPanel {
 
@@ -503,6 +503,9 @@ public class Server extends JFrame implements ActionListener, Runnable {
         // When all information has been inputted, ids and new positions are added to hash maps
         newXPositions.put(intId, newX);
         newYPositions.put(intId, newY);
+        
+        // Outputs message to confirm move
+        outputLog("Drone " + intId + " will be moved to " + newX + ", " + newY + ".");
     }
     
     public void shutDown() {
@@ -582,6 +585,7 @@ class Connection extends Thread {
             
             // Movement variables if drone is outside of boundaries
             // New positions will be set if required
+            boolean outOfBounds = false;
             boolean movementRequired = false;
             
             // Gets drone object from client and adds it to tempDrone object
@@ -606,21 +610,39 @@ class Connection extends Thread {
                 }
             }
             
+            // Checks if drone is in hashmaps for movements
+            // If so sets movementRequired to true, updates drone X and Y positions
+            for (Integer i : Server.newXPositions.keySet()) {
+                if (i == tempDrone.getId()) {
+                    movementRequired = true;
+                    tempDrone.setX_pos(Server.newXPositions.get(i));
+                    Server.newXPositions.remove(i);
+                }
+            }
+            
+            for (Integer i : Server.newYPositions.keySet()) {
+                if (i == tempDrone.getId()) {
+                    movementRequired = true;
+                    tempDrone.setY_pos(Server.newYPositions.get(i));
+                    Server.newYPositions.remove(i);
+                }
+            }
+            
             // Check x positions, set if out of bounds
             if (tempDrone.getX_pos() > 100) {
-                movementRequired = true;
+                outOfBounds = true;
                 tempDrone.setX_pos(80);
             } else if (tempDrone.getX_pos() < -100) {
-                movementRequired = true;
+                outOfBounds = true;
                 tempDrone.setX_pos(-80);
             }
             
             // Check y positions, set if out of bounds
             if (tempDrone.getY_pos() > 100) {
-                movementRequired = true;
+                outOfBounds = true;
                 tempDrone.setY_pos(80);
             } else if (tempDrone.getY_pos() < -100) {
-                movementRequired = true;
+                outOfBounds = true;
                 tempDrone.setY_pos(-80);
             }
             
@@ -636,7 +658,7 @@ class Connection extends Thread {
                     tempDrone.setX_pos(0);
                     tempDrone.setY_pos(0);
                 }
-            } else if (movementRequired) {
+            } else if (movementRequired || outOfBounds) {
                 // Sends move message and receives confirmation between object writes
                 message = "move";
                 out.writeObject(message);
@@ -645,7 +667,16 @@ class Connection extends Thread {
                 clientMessage = (String)in.readObject();
                 out.writeObject(tempDrone.getY_pos());
                 clientMessage = (String)in.readObject();
-                Server.outputLog("Drone " + tempDrone.getId() + " outside of boundaries. Moved back.");
+                
+                // Messages outputed based on if the drone was moved or out of bounds
+                // Not an if else because both messages could be required
+                if (movementRequired) {
+                    Server.outputLog("Drone " + tempDrone.getId() + " successfully moved.");
+                }
+                
+                if (outOfBounds) {
+                    Server.outputLog("Drone " + tempDrone.getId() + " outside of boundaries. Moved back.");
+                }
             } else {
                 // Otherwise just confirms to the client it received the object
                 message = "confirmed";
@@ -654,8 +685,6 @@ class Connection extends Thread {
             
             // Sends tempDrone to the addDrone function to get it in the ArrayList
             Server.addDrone(tempDrone);
-            
-            Server.saveData();
             
             System.out.println(tempDrone);
             
