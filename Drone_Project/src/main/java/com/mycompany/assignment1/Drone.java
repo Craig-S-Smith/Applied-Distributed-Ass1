@@ -53,16 +53,18 @@ public class Drone extends Thread {
         // Asks user to input ID, reads input, if the ID can not be parsed into an integer, displays error and allows re-input
         while (true) {
             System.out.println("Enter Drone ID: ");
+            // Receives input on next line
             String idInput = scanner.nextLine();
             try {
                 id = Integer.parseInt(idInput);
                 if (id < 1) {
                     System.out.println("ID must not be zero or negative.");
                 } else {
+                    // Breaks while statement to allow code continuation
                     break;
                 }
             } catch (NumberFormatException e) {
-                System.out.println("ID must be numeric only.");
+                System.out.println("ID must be numeric only."); // Error message if parseInt fails
             }
         }
         

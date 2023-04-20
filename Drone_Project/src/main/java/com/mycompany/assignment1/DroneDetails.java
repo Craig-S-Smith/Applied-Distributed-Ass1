@@ -14,6 +14,9 @@ import java.io.Serializable;
  */
 public class DroneDetails  implements Serializable {
     
+    // Set serialVersion so classes are the same
+    static final long serialVersionUID = -687991492884005033L;
+    
     // Values in this object
     private int id;
     private String name;

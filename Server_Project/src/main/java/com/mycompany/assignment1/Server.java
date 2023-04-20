@@ -65,6 +65,7 @@ public class Server extends JFrame implements ActionListener, Runnable {
             // Draw drones as blue circles with drone id
             for (DroneDetails p : drones) {
                 if (p.getActive()) {
+                    // Converts coordinates for use on 400 by 400 grid
                     int x = (100 - p.getX_pos()) * 2;
                     int y = (100 - p.getY_pos()) * 2;
                     int size = 10;
@@ -77,6 +78,7 @@ public class Server extends JFrame implements ActionListener, Runnable {
             
             // Draw fires as red circles with fire id and severity
             for (FireDetails p : fires) {
+                // Converts coordinates for use on 400 by 400 grid
                 int x = (100 - p.getX_pos()) * 2;
                 int y = (100 - p.getY_pos()) * 2;
                 int severity = p.getSeverity();
@@ -153,7 +155,6 @@ public class Server extends JFrame implements ActionListener, Runnable {
         outerMapPanel.add(mapPanel);
         bottomPanel.add(outputPanel);
         bottomPanel.add(outerMapPanel);
-        
         
         add(bottomPanel);
         
