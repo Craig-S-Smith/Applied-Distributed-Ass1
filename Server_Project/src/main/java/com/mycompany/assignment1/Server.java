@@ -327,18 +327,21 @@ public class Server extends JFrame implements ActionListener, Runnable {
         String csvDelimiter = ",";
         
         try (BufferedReader br = new BufferedReader(new FileReader("fires.csv"))) {
-         
-         // Read remaining lines
-         while ((line = br.readLine()) != null) {
-            String[] data = line.split(csvDelimiter);
-            int id = Integer.parseInt(data[0]);
-            int x_pos = Integer.parseInt(data[1]);
-            int y_pos = Integer.parseInt(data[2]);
-            int droneId = Integer.parseInt(data[3]);
-            int severity = Integer.parseInt(data[4]);
+        
+            // Read heading line
+            br.readLine();
+            
+            // Read remaining lines
+            while ((line = br.readLine()) != null) {
+               String[] data = line.split(csvDelimiter);
+               int id = Integer.parseInt(data[0]);
+               int x_pos = Integer.parseInt(data[1]);
+               int y_pos = Integer.parseInt(data[2]);
+               int droneId = Integer.parseInt(data[3]);
+               int severity = Integer.parseInt(data[4]);
 
-            FireDetails fire = new FireDetails(id, x_pos, y_pos, droneId, severity);
-            fires.add(fire);
+               FireDetails fire = new FireDetails(id, x_pos, y_pos, droneId, severity);
+               fires.add(fire);
          }
         } catch (IOException e) {
            e.printStackTrace();
@@ -363,6 +366,10 @@ public class Server extends JFrame implements ActionListener, Runnable {
         // Uses object .toCSV() to format the string with variables having commas between
         try {
             FileWriter writer = new FileWriter("fires.csv", false);
+            
+            // Writes heading line with column names
+            writer.write("Fire ID,X Position,Y Position,Reporting Drone ID,Severity\n");
+            
             for (FireDetails p : fires) {
                 writer.write(p.toCSV() + "\n");
             }
