@@ -56,7 +56,7 @@ public class Drone extends Thread {
             String idInput = scanner.nextLine();
             try {
                 id = Integer.parseInt(idInput);
-                if (id < 0) {
+                if (id < 1) {
                     System.out.println("ID must not be zero or negative.");
                 } else {
                     break;
