@@ -11,6 +11,7 @@ import java.io.*;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import javax.swing.*;
 
@@ -39,6 +40,10 @@ public class Server extends JFrame implements ActionListener, Runnable {
     private JButton shutDownButton = new JButton("Shut Down");
     private JScrollPane scrollPane; // Scroll pane for the text area
     private MapPanel mapPanel;
+    
+    // Hash Maps to store positions of drones that need to be moved
+    HashMap<Integer, Integer> newXPositions = new HashMap<>();
+    HashMap<Integer, Integer> newYPositions = new HashMap<>();
     
     public class MapPanel extends JPanel {
 
@@ -422,7 +427,82 @@ public class Server extends JFrame implements ActionListener, Runnable {
     }
     
     public void moveDrone() {
+        // Triggered by move drone button
+        // Initialisation of variables, -0 does not exist as a coordinate
+        int intId = -1;
+        int newX = -0;
+        int newY = -0;
+        boolean droneExists = false;
         
+        /*
+        Opens Option Pane prompting for a Drone ID
+        If cancel is pressed, null will be returned causing the loop to break
+        otherwise it'll attempt to parse the ID to int, if this fails the user will be reprompted after an error message
+        */
+        while (true) {
+            String enteredId = JOptionPane.showInputDialog(null, "Enter ID of drone to be moved.");
+            if (enteredId == null) {
+                return;
+            }
+            try {
+                intId = Integer.parseInt(enteredId);
+                break;
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(null, "ID must be numerical.");
+            }
+        }
+        
+        // Searches for ArrayList to check if a drone with the ID entered exists
+        // If drone is active then it is good to be moved and droneExists is changed to true
+        for (DroneDetails p : drones) {
+            if (p.getId() == intId) {
+                if (p.getActive()) {
+                    droneExists = true;
+                }
+            }
+        }
+        
+        // If no drone exists that is active then droneExists will be false and the user will be given an error message
+        if (!droneExists) {
+            JOptionPane.showMessageDialog(null, "Drone with ID " + intId + " does not exist or is not active.");
+            return;
+        }
+        
+        // Opens option pane prompting user to enter an X position for the drone to be moved to
+        while (true) {
+            String enteredX = JOptionPane.showInputDialog(null, "Enter new X position for drone " + intId + ".");
+            if (enteredX == null) {
+                return;
+            }
+            try {
+                newX = Integer.parseInt(enteredX);
+                break;
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(null, "ID must be numerical.");
+            }
+        }
+        
+        // Opens option pane prompting user to enter an X position for the drone to be moved to
+        while (true) {
+            String enteredY = JOptionPane.showInputDialog(null, "Enter new Y position for drone " + intId + ".");
+            if (enteredY == null) {
+                return;
+            }
+            try {
+                newY = Integer.parseInt(enteredY);
+                break;
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(null, "ID must be numerical.");
+            }
+        }
+        
+        // Removes drone id from hash map in case it's there
+        newXPositions.remove(intId);
+        newYPositions.remove(intId);
+        
+        // When all information has been inputted, ids and new positions are added to hash maps
+        newXPositions.put(intId, newX);
+        newYPositions.put(intId, newY);
     }
     
     public void shutDown() {
