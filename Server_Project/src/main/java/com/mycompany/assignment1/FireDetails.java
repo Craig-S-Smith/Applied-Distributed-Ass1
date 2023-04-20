@@ -14,6 +14,9 @@ import java.io.Serializable;
  */
 public class FireDetails  implements Serializable {
     
+    // Set serialVersion so classes are the same
+    private static final long serialVersionUID = 6529685098267757690L;
+    
     // Values in this object
     private int id;
     private int x_pos;
