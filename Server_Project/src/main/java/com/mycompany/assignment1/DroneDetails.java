@@ -55,6 +55,10 @@ public class DroneDetails  implements Serializable {
     
     // Mutators / Setters
     
+    public void setId(int id) {
+        this.id = id;
+    }
+    
     public void setName(String name) {
         this.name = name;
     }

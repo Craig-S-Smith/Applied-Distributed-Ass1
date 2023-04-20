@@ -53,6 +53,28 @@ public class FireDetails  implements Serializable {
         return severity;
     }
     
+    // Mutators / Setters
+    
+    public void setId(int id) {
+        this.id = id;
+    }
+    
+    public void setX_pos(int x_pos) {
+        this.x_pos = x_pos;
+    }
+    
+    public void setY_pos(int y_pos) {
+        this.y_pos = y_pos;
+    }
+    
+    public void setDroneId(int droneId) {
+        this.droneId = droneId;
+    }
+    
+    public void setSeverity(int severity) {
+        this.severity = severity;
+    }
+    
     public String toCSV() {
         return
                 id + "," +
